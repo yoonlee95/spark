@@ -59,13 +59,21 @@ class SparkHadoopUtil extends Logging {
    * do a FileSystem.closeAllForUGI in order to avoid leaking Filesystems
    */
   def runAsSparkUser(func: () => Unit) {
-    val user = Utils.getCurrentUserName()
-    logDebug("running as user: " + user)
-    val ugi = UserGroupInformation.createRemoteUser(user)
-    transferCredentials(UserGroupInformation.getCurrentUser(), ugi)
-    ugi.doAs(new PrivilegedExceptionAction[Unit] {
-      def run: Unit = func()
-    })
+
+    val currentUser = Option(System.getProperty("user.name")).
+      getOrElse(SparkContext.SPARK_UNKNOWN_USER)
+    val user = Option(System.getenv("SPARK_USER")).getOrElse(SparkContext.SPARK_UNKNOWN_USER)
+    if (user != SparkContext.SPARK_UNKNOWN_USER && currentUser != user) {
+      logDebug("running as user: " + user)
+      val ugi = UserGroupInformation.createRemoteUser(user)
+      transferCredentials(UserGroupInformation.getCurrentUser(), ugi)
+      ugi.doAs(new PrivilegedExceptionAction[Unit] {
+        def run: Unit = func()
+      })
+    } else {
+      logDebug("running as SPARK_UNKNOWN_USER")
+      func()
+    }
   }
 
   def transferCredentials(source: UserGroupInformation, dest: UserGroupInformation) {
