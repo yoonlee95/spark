@@ -133,7 +133,9 @@ private[yarn] class YarnAllocator(
   // Number of cores per executor.
   protected val executorCores = sparkConf.get(EXECUTOR_CORES)
   // Resource capability requested for each executors
-  private[yarn] val resource = Resource.newInstance(executorMemory + memoryOverhead, executorCores)
+  // Yahoo has Haodop configured to request in 1/10 of a core.  To account
+  // for this we have to ask for cores * 10 to get a full core.
+  private[yarn] val resource = Resource.newInstance(executorMemory + memoryOverhead, executorCores * 10)
 
   private val launcherPool = ThreadUtils.newDaemonCachedThreadPool(
     "ContainerLauncher", sparkConf.get(CONTAINER_LAUNCH_MAX_THREADS))

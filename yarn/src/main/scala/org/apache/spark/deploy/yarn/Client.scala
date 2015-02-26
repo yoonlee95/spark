@@ -248,7 +248,9 @@ private[spark] class Client(
 
     val capability = Records.newRecord(classOf[Resource])
     capability.setMemory(amMemory + amMemoryOverhead)
-    capability.setVirtualCores(amCores)
+    // Yahoo has Haodop configured to request in 1/10 of a core.  To account
+    // for this we have to ask for cores * 10 to get a full core.
+    capability.setVirtualCores(amCores * 10)
 
     sparkConf.get(AM_NODE_LABEL_EXPRESSION) match {
       case Some(expr) =>
