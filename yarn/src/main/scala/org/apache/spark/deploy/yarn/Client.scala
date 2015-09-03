@@ -922,8 +922,13 @@ private[spark] class Client(
       javaOpts += "-XX:CMSIncrementalDutyCycle=10"
     }
 
+
     // Include driver-specific java options if we are launching a driver
     if (isClusterMode) {
+      val adminOpts = sparkConf.get("spark.admin.driver.extraJavaOptions",
+        "-Djava.net.preferIPv4Stack=true")
+      javaOpts ++= Utils.splitCommandString(adminOpts).map(YarnSparkHadoopUtil.escapeForShell)
+
       val driverOpts = sparkConf.get(DRIVER_JAVA_OPTIONS).orElse(sys.env.get("SPARK_JAVA_OPTS"))
       driverOpts.foreach { opts =>
         javaOpts ++= Utils.splitCommandString(opts).map(YarnSparkHadoopUtil.escapeForShell)
@@ -938,6 +943,10 @@ private[spark] class Client(
       }
     } else {
       // Validate and include yarn am specific java options in yarn-client mode.
+      val adminOpts = sparkConf.get("spark.admin.yarn.am.extraJavaOptions", 
+        "-Djava.net.preferIPv4Stack=true")
+      javaOpts ++= Utils.splitCommandString(adminOpts).map(YarnSparkHadoopUtil.escapeForShell)
+
       sparkConf.get(AM_JAVA_OPTIONS).foreach { opts =>
         if (opts.contains("-Dspark")) {
           val msg = s"${AM_JAVA_OPTIONS.key} is not allowed to set Spark options (was '$opts')."

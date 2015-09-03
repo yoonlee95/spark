@@ -141,6 +141,10 @@ private[yarn] class ExecutorRunnable(
     val executorMemoryString = executorMemory + "m"
     javaOpts += "-Xmx" + executorMemoryString
 
+    val adminOpts = sys.props.getOrElse("spark.admin.executor.extraJavaOptions", 
+                                        "-Djava.net.preferIPv4Stack=true")
+    javaOpts ++= Utils.splitCommandString(adminOpts).map(YarnSparkHadoopUtil.escapeForShell)
+
     // Set extra Java options for the executor, if defined
     sparkConf.get(EXECUTOR_JAVA_OPTIONS).foreach { opts =>
       javaOpts ++= Utils.splitCommandString(opts).map(YarnSparkHadoopUtil.escapeForShell)
