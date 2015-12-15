@@ -236,6 +236,16 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+    <repository>
+     <id>yahoo</id>
+      <url>http://ymaven.corp.yahoo.com:9999/proximity/repository/public</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -2566,7 +2576,7 @@
     <profile>
       <id>hadoop-2.6</id>
       <properties>
-        <hadoop.version>2.6.4</hadoop.version>
+        <hadoop.version>2.7.1.8.1512052024</hadoop.version>
         <jets3t.version>0.9.3</jets3t.version>
         <zookeeper.version>3.4.6</zookeeper.version>
         <curator.version>2.6.0</curator.version>

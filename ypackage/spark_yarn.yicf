@@ -1,0 +1,236 @@
+PRODUCT_NAME = yspark_yarn
+PACKAGE_OS_VERSIONED = no
+PACKAGE_OS_SPECIFIC = no
+SRCDIRS = ../
+BASE_DIST_VERSION=`cat BASE_DIST_VERSION`
+HADOOP_VERSION=`cat HADOOP_VERSION`
+SCALA_VERSION=`cat SCALA_VERSION`
+VERSION=`cat DIST_FULL_VERSION`
+BASE_SPARK_VERSION=`cat BASE_SPARK_VERSION`
+
+# The following line is to get ymaven deps to work correctly.
+# https://yahoo.jiveon.com/docs/DOC-15122#jive_content_id_Why_am_I_getting_a_generateddummy_pom_when_I_retrieve_a_pom_for_a_yahooyinst_artifact
+#YMAVEN_TRANSITIVE_ENABLED
+
+SHORT_DESC = This package contains the necessary files to run Spark on YARN.
+LONG_DESC = This package contains the necessary files to run Spark on YARN. https://jira.corp.yahoo.com/browse/YSPARK
+CUSTODIAN = yspark-devel@yahoo-inc.com http://twiki.corp.yahoo.com/view/Grid/SparkOnYarnProduct
+
+YINST bug-product jira-yspark
+
+# Permission
+OWNER = root
+GROUP = users
+PERM = 0444
+
+# Dependencies
+
+dir 755 - - share/spark-$(VERSION)/bin
+dir 755 - - share/spark-$(VERSION)/sbin
+dir 755 - - share/spark-$(VERSION)/data
+dir 755 - - share/spark-$(VERSION)/data/mllib
+dir 755 - - share/spark-$(VERSION)/data/mllib/lr-data
+dir 755 - - share/spark-$(VERSION)/data/mllib/als
+dir 755 - - share/spark-$(VERSION)/R
+dir 755 - - share/spark-$(VERSION)/R/lib
+dir 755 - - share/spark-$(VERSION)/python
+dir 755 - - share/spark-$(VERSION)/python/lib
+dir 755 - - share/spark-$(VERSION)/python/build
+dir 755 - - share/spark-$(VERSION)/python/build/py4j
+dir 755 - - share/spark-$(VERSION)/python/test_support
+dir 755 - - share/spark-$(VERSION)/python/pyspark
+dir 755 - - share/spark-$(VERSION)/python/pyspark/ml
+dir 755 - - share/spark-$(VERSION)/python/pyspark/mllib
+dir 755 - - share/spark-$(VERSION)/python/pyspark/mllib/linalg
+dir 755 - - share/spark-$(VERSION)/python/pyspark/mllib/stat
+dir 755 - - share/spark-$(VERSION)/python/pyspark/sql
+dir 755 - - share/spark-$(VERSION)/python/pyspark/streaming
+dir 755 - - share/spark-$(VERSION)/conf
+dir 755 - - share/spark-$(VERSION)/lib
+dir 755 - - share/spark-$(VERSION)/lib/sources
+dir 755 - - share/spark-$(VERSION)/examples
+dir 755 - - share/spark-$(VERSION)/examples/src/main/java
+dir 755 - - share/spark-$(VERSION)/examples/src/main/scala
+dir 755 - - share/spark-$(VERSION)/examples/src/main/r
+dir 755 - - share/spark-$(VERSION)/examples/src/main/python
+dir 755 - - share/spark-$(VERSION)/examples/src/main/python/ml
+dir 755 - - share/spark-$(VERSION)/examples/src/main/python/mllib
+dir 755 - - share/spark-$(VERSION)/examples/src/main/python/streaming
+dir 755 - - share/spark-$(VERSION)/examples/src/main/resources
+
+symlink 0755 - - share/spark spark-$(VERSION)
+symlink 0755 - - share/spark-$(VERSION)/jars lib
+
+glob - - - share/spark-$(VERSION)/data/mllib/ ../data/mllib/*
+glob - - - share/spark-$(VERSION)/data/mllib/als/ ../data/mllib/als/*
+glob - - - share/spark-$(VERSION)/data/mllib/lr-data/ ../data/mllib/lr-data/*
+
+glob - - - share/spark-$(VERSION)/examples/src/main/resources/ ../examples/src/main/resources/*
+
+glob - - - share/spark-$(VERSION)/examples/src/main/python/ ../examples/src/main/python/*
+glob - - - share/spark-$(VERSION)/examples/src/main/python/mllib/ ../examples/src/main/python/mllib/*
+glob - - - share/spark-$(VERSION)/examples/src/main/python/ml/ ../examples/src/main/python/ml/*
+glob - - - share/spark-$(VERSION)/examples/src/main/python/streaming/ ../examples/src/main/python/streaming/*
+
+glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/ ../examples/src/main/java/org/apache/spark/examples/*
+glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/ml/ ../examples/src/main/java/org/apache/spark/examples/ml/*
+glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/mllib/ ../examples/src/main/java/org/apache/spark/examples/mllib/*
+glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/sql/ ../examples/src/main/java/org/apache/spark/examples/sql/*
+glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/streaming/ ../examples/src/main/java/org/apache/spark/examples/streaming/*
+
+glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/ ../examples/src/main/scala/org/apache/spark/examples/*
+glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/streaming/ ../examples/src/main/scala/org/apache/spark/examples/streaming/*
+glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/sql/ ../examples/src/main/scala/org/apache/spark/examples/sql/*.scala
+glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/sql/hive/ ../examples/src/main/scala/org/apache/spark/examples/sql/hive/*
+glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/mllib/ ../examples/src/main/scala/org/apache/spark/examples/mllib/*
+glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/pythonconverters/ ../examples/src/main/scala/org/apache/spark/examples/pythonconverters/*
+glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/graphx/ ../examples/src/main/scala/org/apache/spark/examples/graphx/*
+glob - - - share/spark-$(VERSION)/examples/src/main/r/ ../examples/src/main/r/*
+
+
+file 444 - - share/spark-$(VERSION)/lib/spark-assembly-$(BASE_DIST_VERSION)-hadoop$(HADOOP_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/spark-assembly-$(BASE_SPARK_VERSION)-hadoop$(HADOOP_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-examples-$(BASE_DIST_VERSION)-hadoop$(HADOOP_VERSION).jar ../examples/target/scala-$(SCALA_VERSION)/spark-examples-$(BASE_SPARK_VERSION)-hadoop$(HADOOP_VERSION).jar
+glob - - - share/spark-$(VERSION)/lib/ ../lib_managed/jars/datanucleus*.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-$(BASE_DIST_VERSION)-yarn-shuffle.jar ../network/yarn/target/scala-$(SCALA_VERSION)/spark-$(BASE_SPARK_VERSION)-yarn-shuffle.jar
+
+# include poms and jars for maven compile dependencies to work
+file 444 - - share/spark-$(VERSION)/lib/spark-parent_$(SCALA_VERSION).pom ../pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-bagel_$(SCALA_VERSION).jar ../bagel/target/spark-bagel_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-bagel_$(SCALA_VERSION)-sources.jar ../bagel/target/spark-bagel_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-bagel_$(SCALA_VERSION).pom ../bagel/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-core_$(SCALA_VERSION).jar ../core/target/spark-core_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-core_$(SCALA_VERSION)-sources.jar ../core/target/spark-core_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-core_$(SCALA_VERSION).pom ../core/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume_$(SCALA_VERSION).jar ../external/flume/target/spark-streaming-flume_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume_$(SCALA_VERSION)-sources.jar ../external/flume/target/spark-streaming-flume_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume_$(SCALA_VERSION).pom ../external/flume/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSION).jar ../external/flume-sink/target/spark-streaming-flume-sink_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSION)-sources.jar ../external/flume-sink/target/spark-streaming-flume-sink_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSION).pom ../external/flume-sink/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION).jar ../external/kafka/target/spark-streaming-kafka_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION)-sources.jar ../external/kafka/target/spark-streaming-kafka_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION).pom ../external/kafka/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-mqtt_$(SCALA_VERSION).jar ../external/mqtt/target/spark-streaming-mqtt_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-mqtt_$(SCALA_VERSION)-sources.jar ../external/mqtt/target/spark-streaming-mqtt_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-mqtt_$(SCALA_VERSION).pom ../external/mqtt/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-twitter_$(SCALA_VERSION).jar ../external/twitter/target/spark-streaming-twitter_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-twitter_$(SCALA_VERSION)-sources.jar ../external/twitter/target/spark-streaming-twitter_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-twitter_$(SCALA_VERSION).pom ../external/twitter/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-zeromq_$(SCALA_VERSION).jar ../external/zeromq/target/spark-streaming-zeromq_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-zeromq_$(SCALA_VERSION)-sources.jar ../external/zeromq/target/spark-streaming-zeromq_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-zeromq_$(SCALA_VERSION).pom ../external/zeromq/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-graphx_$(SCALA_VERSION).jar ../graphx/target/spark-graphx_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-graphx_$(SCALA_VERSION)-sources.jar ../graphx/target/spark-graphx_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-graphx_$(SCALA_VERSION).pom ../graphx/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-launcher_$(SCALA_VERSION).jar ../launcher/target/spark-launcher_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-launcher_$(SCALA_VERSION)-sources.jar ../launcher/target/spark-launcher_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-launcher_$(SCALA_VERSION).pom ../launcher/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-mllib_$(SCALA_VERSION).jar ../mllib/target/spark-mllib_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-mllib_$(SCALA_VERSION)-sources.jar ../mllib/target/spark-mllib_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-mllib_$(SCALA_VERSION).pom ../mllib/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-network-common_$(SCALA_VERSION).jar ../network/common/target/spark-network-common_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-network-common_$(SCALA_VERSION)-sources.jar ../network/common/target/spark-network-common_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-network-common_$(SCALA_VERSION).pom ../network/common/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-network-shuffle_$(SCALA_VERSION).jar ../network/shuffle/target/spark-network-shuffle_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-network-shuffle_$(SCALA_VERSION)-sources.jar ../network/shuffle/target/spark-network-shuffle_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-network-shuffle_$(SCALA_VERSION).pom ../network/shuffle/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-network-yarn_$(SCALA_VERSION).jar ../network/yarn/target/spark-network-yarn_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-network-yarn_$(SCALA_VERSION)-sources.jar ../network/yarn/target/spark-network-yarn_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-network-yarn_$(SCALA_VERSION).pom ../network/yarn/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-repl_$(SCALA_VERSION).jar ../repl/target/spark-repl_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-repl_$(SCALA_VERSION)-sources.jar ../repl/target/spark-repl_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-repl_$(SCALA_VERSION).pom ../repl/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-catalyst_$(SCALA_VERSION).jar ../sql/catalyst/target/spark-catalyst_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-catalyst_$(SCALA_VERSION)-sources.jar ../sql/catalyst/target/spark-catalyst_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-catalyst_$(SCALA_VERSION).pom ../sql/catalyst/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-sql_$(SCALA_VERSION).jar ../sql/core/target/spark-sql_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-sql_$(SCALA_VERSION)-sources.jar ../sql/core/target/spark-sql_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-sql_$(SCALA_VERSION).pom ../sql/core/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-hive_$(SCALA_VERSION).jar ../sql/hive/target/spark-hive_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-hive_$(SCALA_VERSION)-sources.jar ../sql/hive/target/spark-hive_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-hive_$(SCALA_VERSION).pom ../sql/hive/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-hive-thriftserver_$(SCALA_VERSION).jar ../sql/hive-thriftserver/target/spark-hive-thriftserver_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-hive-thriftserver_$(SCALA_VERSION)-sources.jar ../sql/hive-thriftserver/target/spark-hive-thriftserver_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-hive-thriftserver_$(SCALA_VERSION).pom ../sql/hive-thriftserver/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming_$(SCALA_VERSION).jar ../streaming/target/spark-streaming_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming_$(SCALA_VERSION)-sources.jar ../streaming/target/spark-streaming_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming_$(SCALA_VERSION).pom ../streaming/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-tools_$(SCALA_VERSION).jar ../tools/target/spark-tools_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-tools_$(SCALA_VERSION)-sources.jar ../tools/target/spark-tools_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-tools_$(SCALA_VERSION).pom ../tools/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-unsafe_$(SCALA_VERSION).jar ../unsafe/target/spark-unsafe_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-unsafe_$(SCALA_VERSION)-sources.jar ../unsafe/target/spark-unsafe_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-unsafe_$(SCALA_VERSION).pom ../unsafe/pom.xml
+file 444 - - share/spark-$(VERSION)/lib/spark-yarn_$(SCALA_VERSION).jar ../yarn/target/spark-yarn_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-yarn_$(SCALA_VERSION)-sources.jar ../yarn/target/spark-yarn_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-yarn_$(SCALA_VERSION).pom ../yarn/pom.xml
+
+# include additonal sources jars
+file 444 - - share/spark-$(VERSION)/lib/spark-examples_$(SCALA_VERSION)-sources.jar ../examples/target/spark-examples_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+
+
+file 444 - - share/spark-$(VERSION)/RELEASE RELEASE
+file 444 - - share/spark-$(VERSION)/README.md ../README.md
+
+file 755 - - share/spark-$(VERSION)/bin/run-example ../bin/run-example
+file 755 - - share/spark-$(VERSION)/bin/spark-class  ../bin/spark-class
+file 755 - - share/spark-$(VERSION)/bin/spark-shell ../bin/spark-shell
+file 755 - - share/spark-$(VERSION)/bin/pyspark ../bin/pyspark
+file 755 - - share/spark-$(VERSION)/bin/spark-submit ../bin/spark-submit
+file 755 - - share/spark-$(VERSION)/bin/load-spark-env.sh ../bin/load-spark-env.sh
+file 755 - - share/spark-$(VERSION)/bin/beeline ../bin/beeline
+file 755 - - share/spark-$(VERSION)/bin/spark-sql ../bin/spark-sql
+file 755 - - share/spark-$(VERSION)/bin/sparkR ../bin/sparkR
+
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/ ../R/lib/SparkR/*
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/help/ ../R/lib/SparkR/help/*
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/html/ ../R/lib/SparkR/html/*
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/Meta/ ../R/lib/SparkR/Meta/*
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/profile/ ../R/lib/SparkR/profile/*
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/R/ ../R/lib/SparkR/R/*
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/tests/ ../R/lib/SparkR/tests/*
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/test_support/ ../R/lib/SparkR/test_support/*
+glob - - - share/spark-$(VERSION)/R/lib/SparkR/worker/ ../R/lib/SparkR/worker/*
+
+file 755 - - share/spark-$(VERSION)/python/run-tests ../python/run-tests
+glob - - - share/spark-$(VERSION)/python/lib/ ../python/lib/*
+glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.py
+glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.txt
+glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.zip
+glob - - - share/spark-$(VERSION)/python/pyspark/ ../python/pyspark/*.py
+glob - - - share/spark-$(VERSION)/python/pyspark/mllib/ ../python/pyspark/mllib/*.py
+glob - - - share/spark-$(VERSION)/python/pyspark/mllib/stat/ ../python/pyspark/mllib/stat/*.py
+glob - - - share/spark-$(VERSION)/python/pyspark/mllib/linalg/ ../python/pyspark/mllib/linalg/*.py
+glob - - - share/spark-$(VERSION)/python/pyspark/ml/ ../python/pyspark/ml/*.py
+glob - - - share/spark-$(VERSION)/python/pyspark/ml/param/ ../python/pyspark/ml/param/*.py
+glob - - - share/spark-$(VERSION)/python/pyspark/sql/ ../python/pyspark/sql/*.py
+glob - - - share/spark-$(VERSION)/python/pyspark/streaming/ ../python/pyspark/streaming/*.py
+
+file 755 - - share/spark-$(VERSION)/sbin/slaves.sh ../sbin/slaves.sh
+file 755 - - share/spark-$(VERSION)/sbin/spark-config.sh ../sbin/spark-config.sh
+file 755 - - share/spark-$(VERSION)/sbin/spark-daemon.sh ../sbin/spark-daemon.sh
+file 755 - - share/spark-$(VERSION)/sbin/spark-daemons.sh ../sbin/spark-daemons.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-all.sh ../sbin/start-all.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-master.sh ../sbin/start-master.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-slave.sh ../sbin/start-slave.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-slaves.sh ../sbin/start-slaves.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-all.sh ../sbin/stop-all.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-master.sh ../sbin/stop-master.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-slave.sh ../sbin/stop-slave.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-slaves.sh ../sbin/stop-slaves.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-history-server.sh ../sbin/start-history-server.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-history-server.sh ../sbin/stop-history-server.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-thriftserver.sh ../sbin/start-thriftserver.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-thriftserver.sh ../sbin/stop-thriftserver.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-shuffle-service.sh ../sbin/start-shuffle-service.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-shuffle-service.sh ../sbin/stop-shuffle-service.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-mesos-dispatcher.sh ../sbin/start-mesos-dispatcher.sh 
+file 755 - - share/spark-$(VERSION)/sbin/stop-mesos-dispatcher.sh ../sbin/stop-mesos-dispatcher.sh 
+file 755 - - share/spark-$(VERSION)/sbin/start-mesos-shuffle-service.sh ../sbin/start-mesos-shuffle-service.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-mesos-shuffle-service.sh ../sbin/stop-mesos-shuffle-service.sh
+
+file 644 - - share/spark-$(VERSION)/conf/log4j.properties.template ../conf/log4j.properties.template
+file 644 - - share/spark-$(VERSION)/conf/metrics.properties.template ../conf/metrics.properties.template
+file 644 - - share/spark-$(VERSION)/conf/spark-env.sh.template ../conf/spark-env.sh.template
+file 644 - - share/spark-$(VERSION)/conf/spark-defaults.conf.template ../conf/spark-defaults.conf.template
+file 644 - - share/spark-$(VERSION)/conf/fairscheduler.xml.template ../conf/fairscheduler.xml.template

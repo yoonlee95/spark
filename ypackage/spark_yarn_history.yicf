@@ -1,0 +1,65 @@
+PRODUCT_NAME = yspark_yarn_history_server
+PACKAGE_OS_VERSIONED = no
+PACKAGE_OS_SPECIFIC = no
+SRCDIRS = ../
+DATESTRING=`date +%y%m%d%H%M`
+BASE_DIST_VERSION=`cat BASE_DIST_VERSION`
+HADOOP_VERSION=`cat HADOOP_VERSION`
+VERSION = `cat DIST_FULL_VERSION`
+SCALA_VERSION=2.10
+BASE_SPARK_VERSION=`cat BASE_SPARK_VERSION`
+
+SHORT_DESC = This package contains the necessary files to run Spark on YARN.
+LONG_DESC = This package contains the necessary files to run Spark on YARN. https://jira.corp.yahoo.com/browse/YSPARK
+CUSTODIAN = yspark-devel@yahoo-inc.com http://twiki.corp.yahoo.com/view/Grid/SparkOnYarnProduct
+
+YINST bug-product jira-yspark
+
+# Permission
+OWNER = root
+GROUP = users
+PERM = 0444
+
+YINST set spark_daemon_memory 8g
+YINST set spark_history_retained_applications 5000
+YINST set spark_history_cleaner_enable true
+YINST set spark_history_cleaner_interval 1d
+YINST set spark_history_cleaner_max_age 14d
+YINST set spark_history_bouncer_filter_params -Dspark.yjava.servlet.filter.BouncerFilter.params='bouncer.public.key.file=/home/gs/conf/bycookieauth/myby.pub'
+YINST set spark_history_gc_opts -XX:GCTimeLimit=90 -XX:ParallelGCThreads=2 -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime
+YINST set spark_history_gc_log_dir 
+
+
+# Dependencies
+
+dir 755 - - share/sparkhistoryserver/bin
+dir 755 - - share/sparkhistoryserver/sbin
+dir 755 - - share/sparkhistoryserver/conf
+dir 755 - - share/sparkhistoryserver/lib
+
+symlink 0755 - - share/sparkhistoryserver/jars lib
+
+file 444 - - share/sparkhistoryserver/lib/spark-assembly-$(BASE_DIST_VERSION)-hadoop$(HADOOP_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/spark-assembly-$(BASE_SPARK_VERSION)-hadoop$(HADOOP_VERSION).jar
+
+file 755 - - share/sparkhistoryserver/bin/spark-class  ../bin/spark-class
+file 755 - - share/sparkhistoryserver/bin/load-spark-env.sh ../bin/load-spark-env.sh
+
+file 755 - - share/sparkhistoryserver/sbin/spark-config.sh ../sbin/spark-config.sh
+file 755 - - share/sparkhistoryserver/sbin/spark-daemon.sh ../sbin/spark-daemon.sh
+file 755 - - share/sparkhistoryserver/sbin/spark-daemons.sh ../sbin/spark-daemons.sh
+file 755 - - share/sparkhistoryserver/sbin/start-history-server.sh ../sbin/start-history-server.sh
+file 755 - - share/sparkhistoryserver/sbin/stop-history-server.sh ../sbin/stop-history-server.sh
+
+file 644 - - share/sparkhistoryserver/conf/log4j.properties.template ../conf/log4j.properties.template
+file 644 - - share/sparkhistoryserver/conf/spark-env.sh.template ../conf/spark-env.sh.template
+file 644 - - share/sparkhistoryserver/conf/spark-defaults.conf.template ../conf/spark-defaults.conf.template
+
+file 444 - - share/sparkhistoryserver/RELEASE RELEASE
+
+configfile 644 - - share/sparkhistoryserver/conf/spark-env.sh conf/spark-env-gen.sh template overwrite
+
+file 755 - - share/sparkhistoryserver/sbin/sparkhistoryserver.init.d sparkhistoryserver.init.d
+
+YINST start 30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d start
+YINST stop  30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d stop
+YINST restart 30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d restart
