@@ -25,7 +25,7 @@ YINST set spark_history_retained_applications 5000
 YINST set spark_history_cleaner_enable true
 YINST set spark_history_cleaner_interval 1d
 YINST set spark_history_cleaner_max_age 14d
-YINST set spark_history_bouncer_filter_params -Dspark.yjava.servlet.filter.BouncerFilter.params='bouncer.public.key.file=/home/gs/conf/bycookieauth/myby.pub'
+YINST set spark_history_bouncer_filter_params -Dspark.yjava.servlet.filter.BouncerFilter.params='bouncer.public.key.file=/usr/local/conf/bouncer'
 YINST set spark_history_gc_opts -XX:GCTimeLimit=90 -XX:ParallelGCThreads=2 -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime
 YINST set spark_history_gc_log_dir 
 
