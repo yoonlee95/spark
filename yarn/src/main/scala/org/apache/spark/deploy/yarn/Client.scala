@@ -943,7 +943,7 @@ private[spark] class Client(
       }
     } else {
       // Validate and include yarn am specific java options in yarn-client mode.
-      val adminOpts = sparkConf.get("spark.admin.yarn.am.extraJavaOptions", 
+      val adminOpts = sparkConf.get("spark.admin.yarn.am.extraJavaOptions",
         "-Djava.net.preferIPv4Stack=true")
       javaOpts ++= Utils.splitCommandString(adminOpts).map(YarnSparkHadoopUtil.escapeForShell)
 
