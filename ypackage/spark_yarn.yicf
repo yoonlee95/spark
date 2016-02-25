@@ -87,9 +87,12 @@ glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examp
 glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/graphx/ ../examples/src/main/scala/org/apache/spark/examples/graphx/*
 glob - - - share/spark-$(VERSION)/examples/src/main/r/ ../examples/src/main/r/*
 
-
+symlink 0755 - - share/spark-$(VERSION)/lib/spark-assembly.jar spark-assembly-$(BASE_DIST_VERSION)-hadoop$(HADOOP_VERSION).jar
 file 444 - - share/spark-$(VERSION)/lib/spark-assembly-$(BASE_DIST_VERSION)-hadoop$(HADOOP_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/spark-assembly-$(BASE_SPARK_VERSION)-hadoop$(HADOOP_VERSION).jar
+
+symlink 0755 - - share/spark-$(VERSION)/lib/spark-examples.jar spark-examples-$(BASE_DIST_VERSION)-hadoop$(HADOOP_VERSION).jar
 file 444 - - share/spark-$(VERSION)/lib/spark-examples-$(BASE_DIST_VERSION)-hadoop$(HADOOP_VERSION).jar ../examples/target/scala-$(SCALA_VERSION)/spark-examples-$(BASE_SPARK_VERSION)-hadoop$(HADOOP_VERSION).jar
+
 glob - - - share/spark-$(VERSION)/lib/ ../lib_managed/jars/datanucleus*.jar
 file 444 - - share/spark-$(VERSION)/lib/spark-$(BASE_DIST_VERSION)-yarn-shuffle.jar ../network/yarn/target/scala-$(SCALA_VERSION)/spark-$(BASE_SPARK_VERSION)-yarn-shuffle.jar
 
