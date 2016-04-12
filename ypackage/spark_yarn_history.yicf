@@ -20,6 +20,7 @@ OWNER = root
 GROUP = users
 PERM = 0444
 
+YINST set spark_daemon_user mapred
 YINST set spark_daemon_memory 8g
 YINST set spark_history_retained_applications 5000
 YINST set spark_history_cleaner_enable true
@@ -60,6 +61,6 @@ configfile 644 - - share/sparkhistoryserver/conf/spark-env.sh conf/spark-env-gen
 
 file 755 - - share/sparkhistoryserver/sbin/sparkhistoryserver.init.d sparkhistoryserver.init.d
 
-YINST start 30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d start
-YINST stop  30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d stop
-YINST restart 30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d restart
+YINST start 30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d start $spark_daemon_user
+YINST stop  30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d stop $spark_daemon_user
+YINST restart 30 $ROOT/share/sparkhistoryserver/sbin/sparkhistoryserver.init.d restart $spark_daemon_user

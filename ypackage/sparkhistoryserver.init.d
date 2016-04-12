@@ -21,6 +21,10 @@ if [ -f "$GS_ROOT/conf/yarn/resourcemanager/hadoop-env.sh" ] ; then
   YARN_CONF_DIR=$GS_ROOT/conf/yarn/resourcemanager
 elif [ -f "$GS_ROOT/conf/yarn/hadoop-env.sh" ] ; then
   YARN_CONF_DIR=$GS_ROOT/conf/yarn
+elif [ -f "$GS_ROOT/conf/hadoop/resourcemanager/hadoop-env.sh" ] ; then
+  YARN_CONF_DIR=$GS_ROOT/conf/hadoop/resourcemanager
+elif [ -f "$GS_ROOT/conf/current/hadoop-env.sh" ] ; then
+  YARN_CONF_DIR=$GS_ROOT/conf/current
 fi
 
 HADOOP_PREFIX=$GS_ROOT/hadoop/current
@@ -30,7 +34,11 @@ if [ -d $GS_ROOT/hadoop/yarn ] ; then
   HADOOP_PREFIX=$GS_ROOT/hadoop/yarn
 fi
 
-YARN_USER=mapred
+if [ -z $2 ] ; then
+  YARN_USER=mapred
+else
+  YARN_USER=$2
+fi
 HADOOP_USER=$YARN_USER
 
 SPARK_CLASSPATH="$(ls ${HADOOP_PREFIX}/share/hadoop/hdfs/lib/yjava_servlet.jar):$(ls ${HADOOP_PREFIX}/share/hadoop/hdfs/lib/yjava_filter_logic*.jar):$(ls ${HADOOP_PREFIX}/share/hadoop/hdfs/lib/yjava_byauth*.jar):$(ls ${HADOOP_PREFIX}/share/hadoop/hdfs/lib/bouncer_auth_java*.jar):$(ls ${HADOOP_PREFIX}/share/hadoop/hdfs/lib/BouncerFilterAuth*.jar):$(ls ${HADOOP_PREFIX}/share/hadoop/hdfs/lib/yjava_servlet_filters*.jar)"
@@ -46,7 +54,7 @@ then
 fi
 
 SPARK_HOME=/home/y/share/sparkhistoryserver/
-SPARK_LOG_DIR=$GS_ROOT/var/log/mapred/
+SPARK_LOG_DIR=$GS_ROOT/var/log/$YARN_USER/
 
 PROC=sparkhistoryserver
 

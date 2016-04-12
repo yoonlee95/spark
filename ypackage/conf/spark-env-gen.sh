@@ -11,6 +11,16 @@ color=$(echo $cluster | cut -d . -f 2)
 spark_kerberos_keytab="/etc/grid-keytabs/${grid}${color}-jt1.prod.service.keytab"
 spark_kerberos_principal="mapred/${grid}${color}-jt1.${color}.ygrid.yahoo.com@YGRID.YAHOO.COM"
 
+
+# if it doesn't exist assume QE setup
+if [ ! -e $spark_kerberos_keytab ] 
+then 
+  host=$(hostname)
+  keytab_name=$(echo $host | cut -d . -f 1)
+  spark_kerberos_keytab="/etc/grid-keytabs/$keytab_name.dev.service.keytab"
+  spark_kerberos_principal="mapred/$host@DEV.YGRID.YAHOO.COM"
+fi
+
 if [ -z ${spark_history_gc_log_dir} ]
 then
   spark_gc_log_file_formatted="-Xloggc:/home/gs/var/log/mapred/gc-sparkhistoryserver.log-`date +'%Y%m%d%H%M'`"
