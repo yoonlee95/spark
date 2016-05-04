@@ -30,6 +30,14 @@ import org.apache.spark.storage.{BlockManagerId, ShuffleBlockId}
 
 class MapOutputTrackerSuite extends SparkFunSuite {
   private val conf = new SparkConf
+  // disabled by default.
+  conf.setIfMissing("spark.shuffle.mapOutput.minSizeForBroadcast", "-1")
+
+  private def newTrackerMaster(sparkConf: SparkConf = conf) = {
+    val broadcastManager = new BroadcastManager(true, sparkConf,
+      new SecurityManager(sparkConf))
+    new MapOutputTrackerMaster(sparkConf, broadcastManager, true)
+  }
 
   private def newTrackerMaster(sparkConf: SparkConf = conf) = {
     val broadcastManager = new BroadcastManager(true, sparkConf,
