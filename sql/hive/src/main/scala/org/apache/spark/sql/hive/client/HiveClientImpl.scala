@@ -181,6 +181,7 @@ private[hive] class HiveClientImpl(
           }
           hiveConf.set(k, v)
         }
+        hiveConf.set(HiveConf.ConfVars.HIVE_EXECUTION_ENGINE.varname, "mr")
         val state = new SessionState(hiveConf)
         if (clientLoader.cachedHive != null) {
           Hive.set(clientLoader.cachedHive.asInstanceOf[Hive])

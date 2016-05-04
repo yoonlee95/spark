@@ -8,7 +8,7 @@ HADOOP_VERSION := $(shell cat $(PKG_DIR)/HADOOP_VERSION)
 VERSION_TIMESTAMP := $(shell date +%y%m%d%H%M)
 DIST_FULL_VERSION = $(shell cat $(PKG_DIR)/DIST_FULL_VERSION)
 
-DEFAULT_SCALA_VERSION := 2.10
+DEFAULT_SCALA_VERSION := 2.11
 # Suffixed _MAKE so users can set SCALA_VERSION in the env.
 SCALA_VERSION_MAKE = $(shell cat $(PKG_DIR)/SCALA_VERSION)
 
@@ -18,7 +18,7 @@ SCALA_VERSION_SUFFIX = $(shell cat $(PKG_DIR)/SCALA_VERSION_SUFFIX)
 	$(PKG_DIR)/DIST_FULL_VERSION manually_create_dist_package update_pom_versions_and_ignore_changes \
 	$(PKG_DIR)/SCALA_VERSION $(PKG_DIR)/SCALA_VERSION_SUFFIX
 
-HADOOP_PROFILE = hadoop-2.6
+HADOOP_PROFILE = hadoop-2.7
 YARN_PROFILE = yarn
 DEFAULT_MVN_PROFILES = -P$(YARN_PROFILE) -P$(HADOOP_PROFILE) -Phive -Phive-thriftserver
 DIST_MVN_PROFILES = $(DEFAULT_MVN_PROFILES) -Psparkr
