@@ -44,7 +44,7 @@ public class JavaUtils {
    * Define a default value for driver memory here since this value is referenced across the code
    * base and nearly all files already use Utils.scala
    */
-  public static final long DEFAULT_DRIVER_MEM_MB = 1024;
+  public static final long DEFAULT_DRIVER_MEM_MB = 3072;
 
   /** Closes the given object, ignoring IOExceptions. */
   public static void closeQuietly(Closeable closeable) {
