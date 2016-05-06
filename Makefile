@@ -4,8 +4,8 @@ include /home/y/share/yahoo_cfg/screwdriver/Make.rules
 HADOOP_TEST_VERSION = 2.6.0
 PKG_DIR := ypackage
 BASE_DIST_VERSION := $(shell cat $(PKG_DIR)/BASE_DIST_VERSION)
+NEW_DIST_VERSION := $(shell /home/y/bin/auto_increment_version.pl yspark_yarn $(BASE_DIST_VERSION) | awk '{print $1}')
 HADOOP_VERSION := $(shell cat $(PKG_DIR)/HADOOP_VERSION)
-VERSION_TIMESTAMP := $(shell date +%y%m%d%H%M)
 DIST_FULL_VERSION = $(shell cat $(PKG_DIR)/DIST_FULL_VERSION)
 
 DEFAULT_SCALA_VERSION := 2.11
@@ -79,7 +79,9 @@ spark_clean_sbt:
 	echo -e "q\n" | sbt/sbt $(DEFAULT_MVN_PROFILES) -Dhadoop.version=$(HADOOP_VERSION) clean
 
 $(PKG_DIR)/DIST_FULL_VERSION: $(PKG_DIR)/SCALA_VERSION_SUFFIX
-	echo "$(BASE_DIST_VERSION)_$(HADOOP_VERSION)_$(VERSION_TIMESTAMP)$(SCALA_VERSION_SUFFIX)" > $(PKG_DIR)/DIST_FULL_VERSION
+	echo "$(NEW_DIST_VERSION)" > $(PKG_DIR)/NEW_DIST_VERSION
+	echo "$(NEW_DIST_VERSION)" > $(PKG_DIR)/DIST_FULL_VERSION
+ 
 
 define ignore-working-tree-changes
 git ls-files -z | xargs --null git update-index --assume-unchanged
@@ -90,13 +92,16 @@ git ls-files -z | xargs --null git update-index --no-assume-unchanged
 endef
 
 define setup-versions
-$(MVN) -q $(DIST_MVN_PROFILES) versions:set -DnewVersion=$(DIST_FULL_VERSION) $(MVN_MAKE_OPTS) > mvn-versions:set.log && \
+$(MVN) -q $(DIST_MVN_PROFILES) versions:set -DnewVersion=$(NEW_DIST_VERSION) $(MVN_MAKE_OPTS) > mvn-versions:set.log && \
 	$(MVN) -q $(DIST_MVN_PROFILES) versions:update-child-modules $(MVN_MAKE_OPTS)
 endef
 
 update_pom_versions_and_ignore_changes: $(PKG_DIR)/DIST_FULL_VERSION
 	$(setup-versions)
 	$(ignore-working-tree-changes)
+
+unignore_changes:
+	$(unignore-working-tree-changes)
 
 manually_create_dist_package: update_pom_versions_and_ignore_changes $(PKG_DIR)/SCALA_VERSION_SUFFIX
 	cd $(PKG_DIR) && \
