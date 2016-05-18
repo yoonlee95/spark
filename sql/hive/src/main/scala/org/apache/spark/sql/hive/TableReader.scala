@@ -25,9 +25,12 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{Path, PathFilter}
 import org.apache.hadoop.hive.metastore.api.hive_metastoreConstants._
 import org.apache.hadoop.hive.ql.exec.Utilities
+import org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat
 import org.apache.hadoop.hive.ql.metadata.{Partition => HivePartition, Table => HiveTable}
 import org.apache.hadoop.hive.ql.plan.TableDesc
+import org.apache.hadoop.hive.serde2.avro.AvroSerdeUtils
 import org.apache.hadoop.hive.serde2.Deserializer
+import org.apache.hadoop.hive.serde2.SerDeUtils
 import org.apache.hadoop.hive.serde2.objectinspector.{ObjectInspectorConverters, StructObjectInspector}
 import org.apache.hadoop.hive.serde2.objectinspector.primitive._
 import org.apache.hadoop.io.Writable
@@ -216,6 +219,22 @@ class HadoopTableReader(
       val localDeserializer = partDeserializer
       val mutableRow = new SpecificInternalRow(attributes.map(_.dataType))
 
+      val useAvroSchemaUrl = if (partition.getTable().getInputFormatClass() == 
+          classOf[org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat]) {
+        val table = partition.getTable()
+        if (!table.getParameters().containsKey(
+            AvroSerdeUtils.AvroTableProperties.SCHEMA_LITERAL.getPropName())
+            && table.getParameters().containsKey(
+            AvroSerdeUtils.AvroTableProperties.SCHEMA_URL.getPropName())) {
+          logInfo("Will attempt to prefetch SCHEMA_LITERAL, from SCHEMA_URL.")
+          true
+        } else {
+          false
+        }
+      } else {
+        false
+      }
+
       // Splits all attributes into two groups, partition key attributes and those that are not.
       // Attached indices indicate the position of each attribute in the output schema.
       val (partitionKeyAttrs, nonPartitionKeyAttrs) =
@@ -247,7 +266,15 @@ class HadoopTableReader(
         partProps.asScala.foreach {
           case (key, value) => props.setProperty(key, value)
         }
-        deserializer.initialize(hconf, props)
+
+        if (useAvroSchemaUrl) {
+          // Initializing the Avro SerDe should pre-fetch schema from SCHEMA_URL.
+          val serdeProps = tableDesc.getProperties
+          SerDeUtils.initializeSerDe(deserializer, hconf, serdeProps, null);
+        } else {
+          deserializer.initialize(hconf, props)
+        }
+
         // get the table deserializer
         val tableSerDe = tableDesc.getDeserializerClass.newInstance()
         tableSerDe.initialize(hconf, tableDesc.getProperties)
