@@ -39,12 +39,6 @@ class MapOutputTrackerSuite extends SparkFunSuite {
     new MapOutputTrackerMaster(sparkConf, broadcastManager, true)
   }
 
-  private def newTrackerMaster(sparkConf: SparkConf = conf) = {
-    val broadcastManager = new BroadcastManager(true, sparkConf,
-      new SecurityManager(sparkConf))
-    new MapOutputTrackerMaster(sparkConf, broadcastManager, true)
-  }
-
   def createRpcEnv(name: String, host: String = "localhost", port: Int = 0,
       securityManager: SecurityManager = new SecurityManager(conf)): RpcEnv = {
     RpcEnv.create(name, host, port, conf, securityManager)
