@@ -54,7 +54,7 @@ $(PKG_DIR)/SCALA_VERSION_SUFFIX: $(PKG_DIR)/SCALA_VERSION
 	cd $(PKG_DIR)/R/ && tar -zxvf R-3.2.1.tar.gz
 	cd $(PKG_DIR)/R/R-3.2.1 && ./configure --prefix=/tmp/rinstall && make -j $(CORES) && make install
 
-spark_bld: /tmp/rinstall/bin/R $(PKG_DIR)/SCALA_VERSION_SUFFIX
+spark_bld: /tmp/rinstall/bin/R $(PKG_DIR)/SCALA_VERSION_SUFFIX update_pom_versions_and_ignore_changes
 	if [ "$(SCALA_VERSION_MAKE)" != "$(DEFAULT_SCALA_VERSION)" ]; then \
 		./dev/change-scala-version.sh $(SCALA_VERSION_MAKE); \
 	fi
