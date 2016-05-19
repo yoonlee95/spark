@@ -337,6 +337,13 @@ private[spark] class ApplicationMaster(
     val historyAddress =
       _sparkConf.get(HISTORY_SERVER_ADDRESS)
         .map { text => SparkHadoopUtil.get.substituteHadoopVariables(text, yarnConf) }
+        .map { subText =>
+          // kind of a hack, if the from hadoop variable was host:port and we added a port,
+          // host:port1:port2, we want to strip off the port from hadoop to get host:port2
+          val splitText = subText.split(":")
+          if (splitText.length > 2) {
+             splitText(0) + ":" + splitText(splitText.length-1)
+          } else subText}
         .map { address => s"${address}${HistoryServer.UI_PATH_PREFIX}/${appId}/${attemptId}" }
         .getOrElse("")
 
