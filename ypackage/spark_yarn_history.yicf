@@ -2,12 +2,11 @@ PRODUCT_NAME = yspark_yarn_history_server
 PACKAGE_OS_VERSIONED = no
 PACKAGE_OS_SPECIFIC = no
 SRCDIRS = ../
-DATESTRING=`date +%y%m%d%H%M`
 BASE_DIST_VERSION=`cat NEW_DIST_VERSION`
 HADOOP_VERSION=`cat HADOOP_VERSION`
-VERSION = `cat DIST_FULL_VERSION`
-SCALA_VERSION=2.10
-BASE_SPARK_VERSION=`cat BASE_SPARK_VERSION`
+SCALA_VERSION=`cat SCALA_VERSION`
+VERSION=`cat DIST_FULL_VERSION`
+BASE_SPARK_VERSION=`cat NEW_DIST_VERSION`
 
 SHORT_DESC = This package contains the necessary files to run Spark on YARN.
 LONG_DESC = This package contains the necessary files to run Spark on YARN. https://jira.corp.yahoo.com/browse/YSPARK
@@ -40,7 +39,7 @@ dir 755 - - share/sparkhistoryserver/lib
 
 symlink 0755 - - share/sparkhistoryserver/jars lib
 
-file 444 - - share/sparkhistoryserver/lib/spark-assembly-$(BASE_DIST_VERSION)-hadoop$(HADOOP_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/spark-assembly-$(BASE_SPARK_VERSION)-hadoop$(HADOOP_VERSION).jar
+glob - - - share/spark-$(VERSION)/lib/ ../assembly/target/scala-$(SCALA_VERSION)/jars/*
 
 file 755 - - share/sparkhistoryserver/bin/spark-class  ../bin/spark-class
 file 755 - - share/sparkhistoryserver/bin/load-spark-env.sh ../bin/load-spark-env.sh

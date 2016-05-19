@@ -2,12 +2,11 @@ PRODUCT_NAME = yspark_yarn_shuffle
 PACKAGE_OS_VERSIONED = no
 PACKAGE_OS_SPECIFIC = no
 SRCDIRS = ../
-DATESTRING=`date +%y%m%d%H%M`
 BASE_DIST_VERSION=`cat NEW_DIST_VERSION`
 HADOOP_VERSION=`cat HADOOP_VERSION`
-VERSION = `cat DIST_FULL_VERSION`
-SCALA_VERSION=2.10
-BASE_SPARK_VERSION=`cat BASE_SPARK_VERSION`
+SCALA_VERSION=`cat SCALA_VERSION`
+VERSION=`cat DIST_FULL_VERSION`
+BASE_SPARK_VERSION=`cat NEW_DIST_VERSION`
 
 SHORT_DESC = This package contains the necessary files to run the Spark shuffle auxiliary service on YARN.
 LONG_DESC = This package contains the necessary files to run the Spark shuffle auxiliary service on YARN. https://jira.corp.yahoo.com/browse/YSPARK
@@ -22,6 +21,6 @@ PERM = 0444
 
 dir 755 - - share/sparkshuffle/lib
 
-file 444 - - share/sparkshuffle/lib/spark-$(BASE_DIST_VERSION)-yarn-shuffle.jar ../network/yarn/target/scala-$(SCALA_VERSION)/spark-$(BASE_SPARK_VERSION)-yarn-shuffle.jar
+file 444 - - share/sparkshuffle/lib/spark-$(BASE_DIST_VERSION)-yarn-shuffle.jar ../common/network-yarn/target/scala-$(SCALA_VERSION)/spark-$(BASE_SPARK_VERSION)-yarn-shuffle.jar
 
 symlink 0755 - - share/sparkshuffle/lib/spark-yarn-shuffle.jar  spark-$(BASE_DIST_VERSION)-yarn-shuffle.jar
