@@ -165,10 +165,6 @@ file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSI
 file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSION)-sources.jar ../external/flume-sink/target/spark-streaming-flume-sink_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
 file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSION).pom ../external/flume-sink/pom.xml
 
-file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION).jar ../external/kafka/target/spark-streaming-kafka_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
-file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION)-sources.jar ../external/kafka/target/spark-streaming-kafka_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
-file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION).pom ../external/kafka/pom.xml
-
 file 444 - - share/spark-$(VERSION)/lib/spark-unsafe_$(SCALA_VERSION).jar ../common/unsafe/target/spark-unsafe_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
 file 444 - - share/spark-$(VERSION)/lib/spark-unsafe_$(SCALA_VERSION)-sources.jar ../common/unsafe/target/spark-unsafe_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
 file 444 - - share/spark-$(VERSION)/lib/spark-unsafe_$(SCALA_VERSION).pom ../common/unsafe/pom.xml
