@@ -219,7 +219,7 @@ class HadoopTableReader(
       val localDeserializer = partDeserializer
       val mutableRow = new SpecificInternalRow(attributes.map(_.dataType))
 
-      val useAvroSchemaUrl = if (partition.getTable().getInputFormatClass() == 
+      val useAvroSchemaUrl = if (partition.getTable().getInputFormatClass() ==
           classOf[org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat]) {
         val table = partition.getTable()
         if (!table.getParameters().containsKey(
