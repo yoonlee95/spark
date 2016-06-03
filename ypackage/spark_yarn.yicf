@@ -98,7 +98,7 @@ file 444 - - share/spark-$(VERSION)/lib/spark-$(BASE_DIST_VERSION)-yarn-shuffle.
 
 
 # include the spark tgz which has all the jars.
-glob - - - share/spark-$(VERSION)/ ../assembly/target/scala-$(SCALA_VERSION)/jars/yspark-jars-$(BASE_DIST_VERSION).tgz
+file - - - share/spark-$(VERSION)/yspark-jars-$(BASE_DIST_VERSION).tgz ../assembly/target/scala-$(SCALA_VERSION)/jars/yspark-jars-$(BASE_DIST_VERSION).tgz
 
 glob - - - share/spark-$(VERSION)/lib/ ../assembly/target/scala-$(SCALA_VERSION)/jars/*
 
