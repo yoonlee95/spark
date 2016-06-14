@@ -100,6 +100,9 @@ update_pom_versions_and_ignore_changes: $(PKG_DIR)/DIST_FULL_VERSION
 	$(setup-versions)
 	$(ignore-working-tree-changes)
 
+ignore_changes:
+	$(ignore-working-tree-changes)
+
 unignore_changes:
 	$(unignore-working-tree-changes)
 
