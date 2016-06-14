@@ -39,7 +39,7 @@ dir 755 - - share/sparkhistoryserver/lib
 
 symlink 0755 - - share/sparkhistoryserver/jars lib
 
-glob - - - share/spark-$(VERSION)/lib/ ../assembly/target/scala-$(SCALA_VERSION)/jars/*
+glob - - - share/sparkhistoryserver/lib/ ../assembly/target/scala-$(SCALA_VERSION)/jars/*
 
 file 755 - - share/sparkhistoryserver/bin/spark-class  ../bin/spark-class
 file 755 - - share/sparkhistoryserver/bin/load-spark-env.sh ../bin/load-spark-env.sh
