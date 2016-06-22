@@ -94,7 +94,6 @@ glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examp
 
 symlink 0755 - - share/spark-$(VERSION)/lib/spark-examples.jar spark-examples_$(SCALA_VERSION)-$(BASE_DIST_VERSION).jar
 file 444 - - share/spark-$(VERSION)/lib/spark-examples_$(SCALA_VERSION)-$(BASE_DIST_VERSION).jar ../examples/target/scala-$(SCALA_VERSION)/jars/spark-examples_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
-file 444 - - share/spark-$(VERSION)/lib/spark-$(BASE_DIST_VERSION)-yarn-shuffle.jar ../common/network-yarn/target/scala-$(SCALA_VERSION)/spark-$(BASE_SPARK_VERSION)-yarn-shuffle.jar
 
 
 # include the spark tgz which has all the jars.
