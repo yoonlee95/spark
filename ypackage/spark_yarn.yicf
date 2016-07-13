@@ -371,7 +371,6 @@ file 444 - - share/spark-$(VERSION)/lib/jersey-client-2.22.2.jar ../assembly/tar
 file 444 - - share/spark-$(VERSION)/lib/jersey-common-2.22.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jersey-common-2.22.2.jar
 file 444 - - share/spark-$(VERSION)/lib/jersey-container-servlet-2.22.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jersey-container-servlet-2.22.2.jar
 file 444 - - share/spark-$(VERSION)/lib/jersey-container-servlet-core-2.22.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jersey-container-servlet-core-2.22.2.jar
-file 444 - - share/spark-$(VERSION)/lib/jersey-core-1.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jersey-core-1.8.jar 
 file 444 - - share/spark-$(VERSION)/lib/jersey-guava-2.22.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jersey-guava-2.22.2.jar
 file 444 - - share/spark-$(VERSION)/lib/jersey-media-jaxb-2.22.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jersey-media-jaxb-2.22.2.jar
 file 444 - - share/spark-$(VERSION)/lib/jersey-server-2.22.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jersey-server-2.22.2.jar
@@ -435,7 +434,7 @@ file 444 - - share/spark-$(VERSION)/lib/scalap-2.11.8.jar ../assembly/target/sca
 file 444 - - share/spark-$(VERSION)/lib/scala-parser-combinators_2.11-1.0.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/scala-parser-combinators_2.11-1.0.4.jar
 file 444 - - share/spark-$(VERSION)/lib/scala-reflect-2.11.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/scala-reflect-2.11.8.jar
 file 444 - - share/spark-$(VERSION)/lib/scala-xml_2.11-1.0.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/scala-xml_2.11-1.0.2.jar
-file 444 - - share/spark-$(VERSION)/lib/slf4j-api-1.7.16.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/slf4j-api-1.7.16.jar .
+file 444 - - share/spark-$(VERSION)/lib/slf4j-api-1.7.16.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/slf4j-api-1.7.16.jar
 file 444 - - share/spark-$(VERSION)/lib/slf4j-log4j12-1.7.16.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/slf4j-log4j12-1.7.16.jar
 file 444 - - share/spark-$(VERSION)/lib/snappy-0.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/snappy-0.2.jar
 file 444 - - share/spark-$(VERSION)/lib/snappy-java-1.1.2.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/snappy-java-1.1.2.4.jar
