@@ -73,7 +73,7 @@ package object config {
     ConfigBuilder("spark.dynamicAllocation.maxExecutors").intConf.createWithDefault(Int.MaxValue)
 
   private[spark] val SHUFFLE_SERVICE_ENABLED =
-    ConfigBuilder("spark.shuffle.service.enabled").booleanConf.createWithDefault(false)
+    ConfigBuilder("spark.shuffle.service.enabled").booleanConf.createWithDefault(true)
 
   private[spark] val KEYTAB = ConfigBuilder("spark.yarn.keytab")
     .doc("Location of user's keytab.")

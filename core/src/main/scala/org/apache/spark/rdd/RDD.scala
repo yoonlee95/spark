@@ -1566,7 +1566,7 @@ abstract class RDD[T: ClassTag](
    * The checkpoint directory set through `SparkContext#setCheckpointDir` is not used.
    */
   def localCheckpoint(): this.type = RDDCheckpointData.synchronized {
-    if (conf.getBoolean("spark.dynamicAllocation.enabled", false) &&
+    if (conf.getBoolean("spark.dynamicAllocation.enabled", true) &&
         conf.contains("spark.dynamicAllocation.cachedExecutorIdleTimeout")) {
       logWarning("Local checkpointing is NOT safe to use with dynamic allocation, " +
         "which removes executors along with their cached blocks. If you must use both " +

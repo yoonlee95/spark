@@ -45,7 +45,7 @@ class ExternalShuffleService(sparkConf: SparkConf, securityManager: SecurityMana
   protected val masterMetricsSystem =
     MetricsSystem.createMetricsSystem("shuffleService", sparkConf, securityManager)
 
-  private val enabled = sparkConf.getBoolean("spark.shuffle.service.enabled", false)
+  private val enabled = sparkConf.getBoolean("spark.shuffle.service.enabled", true)
   private val port = sparkConf.getInt("spark.shuffle.service.port", 7337)
   private val useSasl: Boolean = securityManager.isAuthenticationEnabled()
 

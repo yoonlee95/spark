@@ -76,7 +76,7 @@ private[spark] class BlockManager(
   extends BlockDataManager with BlockEvictionHandler with Logging {
 
   private[spark] val externalShuffleServiceEnabled =
-    conf.getBoolean("spark.shuffle.service.enabled", false)
+    conf.getBoolean("spark.shuffle.service.enabled", true)
 
   val diskBlockManager = {
     // Only perform cleanup if an external service is not serving our shuffle files.
