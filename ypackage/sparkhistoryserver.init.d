@@ -55,6 +55,7 @@ fi
 
 SPARK_HOME=/home/y/share/sparkhistoryserver/
 SPARK_LOG_DIR=$GS_ROOT/var/log/$YARN_USER/
+SPARK_PID_DIR=$GS_ROOT/var/run/$YARN_USER/
 
 PROC=sparkhistoryserver
 
