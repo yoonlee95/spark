@@ -203,7 +203,6 @@ glob - - - share/spark-$(VERSION)/R/lib/SparkR/profile/ ../R/lib/SparkR/profile/
 glob - - - share/spark-$(VERSION)/R/lib/SparkR/R/ ../R/lib/SparkR/R/*
 glob - - - share/spark-$(VERSION)/R/lib/SparkR/tests/ ../R/lib/SparkR/tests/*
 glob - - - share/spark-$(VERSION)/R/lib/SparkR/tests/testthat/ ../R/lib/SparkR/tests/testthat/*
-glob - - - share/spark-$(VERSION)/R/lib/SparkR/test_support/ ../R/lib/SparkR/test_support/*
 glob - - - share/spark-$(VERSION)/R/lib/SparkR/worker/ ../R/lib/SparkR/worker/*
 
 file 755 - - share/spark-$(VERSION)/python/run-tests ../python/run-tests
