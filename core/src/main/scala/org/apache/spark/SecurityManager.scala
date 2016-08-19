@@ -203,9 +203,12 @@ private[spark] class SecurityManager(
   private var adminAcls: Set[String] =
     stringToSet(sparkConf.get("spark.admin.acls", "tgraves"))
 
+  // default cluster admin acls which should always be set.
+  private val sparkClusterAdminGroups = "gridadmin,hadoop,"
+
   // admin group acls should be set before view or modify group acls
   private var adminAclsGroups : Set[String] =
-    stringToSet(sparkConf.get("spark.admin.acls.groups", "gridadmin,hadoop"))
+    stringToSet(sparkClusterAdminGroups + sparkConf.get("spark.admin.acls.groups", ""))
 
   private var viewAcls: Set[String] = _
 
@@ -407,7 +410,7 @@ private[spark] class SecurityManager(
    * acls groups you should also set the view and modify acls groups again to pick up the changes.
    */
   def setAdminAclsGroups(adminUserGroups: String) {
-    adminAclsGroups = stringToSet(adminUserGroups)
+    adminAclsGroups = stringToSet(sparkClusterAdminGroups + adminUserGroups)
     logInfo("Changing admin acls groups to: " + adminAclsGroups.mkString(","))
   }
 
