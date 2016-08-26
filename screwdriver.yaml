@@ -1,0 +1,26 @@
+platform: cpp
+
+shared:
+    notifications:
+        email: "yspark-devel@yahoo-inc.com"
+    steps:
+        git_tag:
+            description: Git tag after successful release
+            command: gmake git_tag
+        my_package:
+            description: Make packages
+            command: gmake package
+        run-dist:
+            description: "Publish yspark 2.0"
+            command: step dist-publish@1 --artifactsDirectory "${SOURCE_DIR}/target" --branch "quarantine" --notifications "false" --tag "yspark_yarn_2_0_latest_hadoop2"
+    plugins:
+        coverage:
+            enabled: false
+        test_results:
+            enabled: false
+
+jobs:
+    component:
+        order: [environment, install-rpms, init, build, my_package, run-dist, git_tag]
+    pull-request:
+        order: [environment, install-rpms, init, build, my_package]

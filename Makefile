@@ -1,5 +1,3 @@
-include /home/y/share/yahoo_cfg/screwdriver/Make.rules
-
 
 HADOOP_TEST_VERSION = 2.6.0
 PKG_DIR := ypackage
@@ -13,10 +11,6 @@ DEFAULT_SCALA_VERSION := 2.11
 SCALA_VERSION_MAKE = $(shell cat $(PKG_DIR)/SCALA_VERSION)
 
 SCALA_VERSION_SUFFIX = $(shell cat $(PKG_DIR)/SCALA_VERSION_SUFFIX)
-
-.PHONY: screwdriver spark_bld spark_test spark_bld_sbt spark_test_sbt \
-	$(PKG_DIR)/DIST_FULL_VERSION manually_create_dist_package update_pom_versions_and_ignore_changes \
-	$(PKG_DIR)/SCALA_VERSION $(PKG_DIR)/SCALA_VERSION_SUFFIX
 
 HADOOP_PROFILE = hadoop-2.7
 YARN_PROFILE = yarn
@@ -110,3 +104,20 @@ manually_create_dist_package: update_pom_versions_and_ignore_changes $(PKG_DIR)/
 	cd $(PKG_DIR) && \
 		yinst_create --buildtype release spark_yarn.yicf
 	$(unignore-working-tree-changes)
+
+cleanplatforms:
+	@echo "Skipping clean"
+
+platforms: spark_bld
+
+package: update_pom_versions_and_ignore_changes $(PKG_DIR)/SCALA_VERSION_SUFFIX
+	(unset PLATFORM && cd $(PKG_DIR) && yinst_create --buildtype release spark_yarn.yicf)
+	(unset PLATFORM && cd $(PKG_DIR) && yinst_create --buildtype release spark_yarn_history.yicf)
+	(unset PLATFORM && cd $(PKG_DIR) && yinst_create --buildtype release spark_yarn_shuffle.yicf)
+	mkdir -p ${SRC_DIR}/target
+	cp ypackage/*tgz ${SRC_DIR}/target
+	$(unignore-working-tree-changes)
+
+git_tag:
+	git tag -f -a `dist_tag list yspark_yarn_2_0_latest_hadoop2  | grep yspark_yarn- | cut -d '-' -f 2 | cut -d ' ' -f 1` -m "yahoo version `dist_tag list  yspark_yarn_2_0_latest_hadoop2 | grep yspark_yarn- | cut -d '-' -f 2 | cut -d ' ' -f 1`"
+	git push origin `dist_tag list yspark_yarn_2_0_latest_hadoop2 | grep yspark_yarn- | grep yspark_yarn- | cut -d '-' -f 2 | cut -d ' ' -f 1`
