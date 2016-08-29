@@ -38,8 +38,20 @@ dir 755 - - share/spark-$(VERSION)/python/lib
 dir 755 - - share/spark-$(VERSION)/python/build
 dir 755 - - share/spark-$(VERSION)/python/build/py4j
 dir 755 - - share/spark-$(VERSION)/python/test_support
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/orc_partitioned
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/orc_partitioned/b=0/c=0
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/orc_partitioned/b=1/c=1
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2014/month=9/day=1/
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2015/month=10/day=25/
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2015/month=10/day=26/
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2015/month=9/day=1/
+dir 755 - - share/spark-$(VERSION)/python/test_support/sql/streaming
 dir 755 - - share/spark-$(VERSION)/python/pyspark
 dir 755 - - share/spark-$(VERSION)/python/pyspark/ml
+dir 755 - - share/spark-$(VERSION)/python/pyspark/ml/linalg
+dir 755 - - share/spark-$(VERSION)/python/pyspark/ml/param
 dir 755 - - share/spark-$(VERSION)/python/pyspark/mllib
 dir 755 - - share/spark-$(VERSION)/python/pyspark/mllib/linalg
 dir 755 - - share/spark-$(VERSION)/python/pyspark/mllib/stat
@@ -210,11 +222,24 @@ glob - - - share/spark-$(VERSION)/python/lib/ ../python/lib/*
 glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.py
 glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.txt
 glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.zip
+glob - - - share/spark-$(VERSION)/python/test_support/sql/ ../python/test_support/sql/*.csv
+glob - - - share/spark-$(VERSION)/python/test_support/sql/ ../python/test_support/sql/*.json
+glob - - - share/spark-$(VERSION)/python/test_support/sql/ ../python/test_support/sql/*.txt
+glob - - - share/spark-$(VERSION)/python/test_support/sql/orc_partitioned/ ../python/test_support/sql/orc_partitioned/*
+glob - - - share/spark-$(VERSION)/python/test_support/sql/orc_partitioned/b=0/c=0/ ../python/test_support/sql/orc_partitioned/b=0/c=0/*.orc
+glob - - - share/spark-$(VERSION)/python/test_support/sql/orc_partitioned/b=1/c=1/ ../python/test_support/sql/orc_partitioned/b=1/c=1/*.orc
+glob - - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/ ../python/test_support/sql/parquet_partitioned/*
+glob - - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2014/month=9/day=1/ ../python/test_support/sql/parquet_partitioned/year=2014/month=9/day=1/*.parquet
+glob - - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2015/month=10/day=25/ ../python/test_support/sql/parquet_partitioned/year=2015/month=10/day=25/*.parquet
+glob - - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2015/month=10/day=26/ ../python/test_support/sql/parquet_partitioned/year=2015/month=10/day=26/*.parquet
+glob - - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2015/month=9/day=1/ ../python/test_support/sql/parquet_partitioned/year=2015/month=9/day=1/*.parquet
+glob - - - share/spark-$(VERSION)/python/test_support/sql/streaming/ ../python/test_support/sql/streaming/*.txt
 glob - - - share/spark-$(VERSION)/python/pyspark/ ../python/pyspark/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/mllib/ ../python/pyspark/mllib/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/mllib/stat/ ../python/pyspark/mllib/stat/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/mllib/linalg/ ../python/pyspark/mllib/linalg/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/ml/ ../python/pyspark/ml/*.py
+glob - - - share/spark-$(VERSION)/python/pyspark/ml/linalg/ ../python/pyspark/ml/linalg/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/ml/param/ ../python/pyspark/ml/param/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/sql/ ../python/pyspark/sql/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/streaming/ ../python/pyspark/streaming/*.py
