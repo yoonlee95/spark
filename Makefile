@@ -21,8 +21,6 @@ MVN = build/mvn --force
 CORES = $(shell test -f /proc/cpuinfo && grep '^processor' /proc/cpuinfo |wc -l)
 CORES ?= 1
 
-screwdriver: spark_bld
-
 test: spark_bld_sbt spark_test_sbt spark_save_test_results 
 
 test_mvn: spark_test spark_save_test_results 
