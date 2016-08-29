@@ -22,5 +22,7 @@ shared:
 jobs:
     component:
         order: [environment, install-rpms, init, build, my_package, run-dist, git_tag]
+        triggers:
+            - sd@148487
     pull-request:
         order: [environment, install-rpms, init, build, my_package]
