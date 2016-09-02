@@ -641,6 +641,14 @@ private[spark] class Client(
       distribute(f, targetDir = targetDir)
     }
 
+    sparkConf.getOption("spark.admin.yarn.pythonZip").foreach { zip =>
+      if (!zip.isEmpty()) {
+        distribute(zip,
+          resType = LocalResourceType.ARCHIVE,
+          destName = Some(LOCALIZED_PYTHON_INSTALL_DIR))
+      }
+    }
+
     // Update the configuration with all the distributed files, minus the conf archive. The
     // conf archive will be handled by the AM differently so that we avoid having to send
     // this configuration by other means. See SPARK-14602 for one reason of why this is needed.
@@ -784,6 +792,23 @@ private[spark] class Client(
       .filter { case (k, v) => k.startsWith(amEnvPrefix) }
       .map { case (k, v) => (k.substring(amEnvPrefix.length), v) }
       .foreach { case (k, v) => YarnSparkHadoopUtil.addPathToEnvironment(env, k, v) }
+
+    // here is the pythonZip is specified we are going to automatically set
+    // the python path to use it.  Put this after user env settings so that
+    // we can check to see if they already set
+    sparkConf.getOption("spark.admin.yarn.pythonZip").foreach { zip =>
+      if (!zip.isEmpty()) {
+        val pythonInstallPath = "./" + LOCALIZED_PYTHON_INSTALL_DIR + "/bin/python"
+        if ((!env.contains("PYSPARK_PYTHON")) && (!env.contains("PYSPARK_DRIVER_PYTHON"))) {
+          List("PYSPARK_PYTHON", "PYSPARK_DRIVER_PYTHON").foreach { k =>
+            YarnSparkHadoopUtil.addPathToEnvironment(env, k, pythonInstallPath)
+          }
+        }
+        if (!sparkConf.getOption("spark.executorEnv.PYSPARK_PYTHON").nonEmpty) {
+          sparkConf.setExecutorEnv("PYSPARK_PYTHON", pythonInstallPath)
+        }
+      }
+    }
 
     // Keep this for backwards compatibility but users should move to the config
     sys.env.get("SPARK_YARN_USER_ENV").foreach { userEnvs =>
@@ -1272,6 +1297,8 @@ private object Client extends Logging {
 
   // Subdirectory where Spark libraries will be placed.
   val LOCALIZED_LIB_DIR = "__spark_libs__"
+
+  val LOCALIZED_PYTHON_INSTALL_DIR = "__python_install__"
 
   /**
    * Return the path to the given application's staging directory.
