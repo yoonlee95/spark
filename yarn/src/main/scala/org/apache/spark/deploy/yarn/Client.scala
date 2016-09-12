@@ -838,6 +838,19 @@ private[spark] class Client(
       }
     }
 
+    // go ahead and include any archives into the PYTHONPATH in case users upload 
+    // modules/packages via archives they will automatically be included
+    if (sparkConf.getBoolean("spark.yarn.isPython", false) && 
+        sparkConf.getBoolean("spark.yarn.includeArchivesPythonPath", false)) {
+      sparkConf.get(ARCHIVES_TO_DISTRIBUTE).foreach { path =>
+        val trimmedPath = path.trim()
+        val localURI = Utils.resolveURI(trimmedPath)
+        val localPath = getQualifiedLocalPath(localURI, hadoopConf)
+        val linkname = Option(localURI.getFragment()).getOrElse(localPath.getName())
+        pythonPath += buildPath(YarnSparkHadoopUtil.expandEnvironment(Environment.PWD), linkname);
+      }
+    }
+
     // Finally, update the Spark config to propagate PYTHONPATH to the AM and executors.
     if (pythonPath.nonEmpty) {
       val pythonPathStr = (sys.env.get("PYTHONPATH") ++ pythonPath)
