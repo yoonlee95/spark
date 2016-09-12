@@ -392,6 +392,7 @@ private[spark] object HiveUtils extends Logging {
     // Then, you will find that the local metastore mode is only set to true when
     // hive.metastore.uris is not set.
     propMap.put(ConfVars.METASTOREURIS.varname, "")
+    propMap.put(ConfVars.HIVE_EXECUTION_ENGINE.varname, "mr")
 
     // The execution client will generate garbage events, therefore the listeners that are generated
     // for the execution clients are useless. In order to not output garbage, we don't generate
