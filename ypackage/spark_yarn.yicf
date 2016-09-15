@@ -78,6 +78,7 @@ glob - - - share/spark-$(VERSION)/data/mllib/als/ ../data/mllib/als/*
 glob - - - share/spark-$(VERSION)/data/mllib/lr-data/ ../data/mllib/lr-data/*
 glob - - - share/spark-$(VERSION)/data/mllib/lr-data/ ../data/mllib/ridge-data/*
 glob - - - share/spark-$(VERSION)/data/streaming/ ../data/streaming/*
+glob - - - share/spark-$(VERSION)/data/graphx/ ../data/graphx/*
 
 glob - - - share/spark-$(VERSION)/examples/src/main/resources/ ../examples/src/main/resources/*
 
@@ -92,6 +93,8 @@ glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/exampl
 glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/ml/ ../examples/src/main/java/org/apache/spark/examples/ml/*
 glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/mllib/ ../examples/src/main/java/org/apache/spark/examples/mllib/*
 glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/sql/ ../examples/src/main/java/org/apache/spark/examples/sql/*
+glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/sql/hive/ ../examples/src/main/java/org/apache/spark/examples/sql/hive/*
+glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/sql/streaming/ ../examples/src/main/java/org/apache/spark/examples/sql/streaming/*
 glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/streaming/ ../examples/src/main/java/org/apache/spark/examples/streaming/*
 
 glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/ ../examples/src/main/scala/org/apache/spark/examples/*
@@ -99,6 +102,7 @@ glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examp
 glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/streaming/clickstream/ ../examples/src/main/scala/org/apache/spark/examples/streaming/clickstream/*
 glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/sql/ ../examples/src/main/scala/org/apache/spark/examples/sql/*.scala
 glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/sql/hive/ ../examples/src/main/scala/org/apache/spark/examples/sql/hive/*
+glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/sql/streaming/ ../examples/src/main/scala/org/apache/spark/examples/sql/streaming/*
 glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/mllib/ ../examples/src/main/scala/org/apache/spark/examples/mllib/*
 glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/ml/ ../examples/src/main/scala/org/apache/spark/examples/ml/*
 glob - - - share/spark-$(VERSION)/examples/src/main/scala/org/apache/spark/examples/pythonconverters/ ../examples/src/main/scala/org/apache/spark/examples/pythonconverters/*
@@ -142,6 +146,10 @@ file 444 - - share/spark-$(VERSION)/lib/spark-mllib_$(SCALA_VERSION).jar ../mlli
 file 444 - - share/spark-$(VERSION)/lib/spark-mllib_$(SCALA_VERSION)-sources.jar ../mllib/target/spark-mllib_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
 file 444 - - share/spark-$(VERSION)/lib/spark-mllib_$(SCALA_VERSION).pom ../mllib/pom.xml
 
+file 444 - - share/spark-$(VERSION)/lib/spark-mllib-local_$(SCALA_VERSION).jar ../mllib-local/target/spark-mllib-local_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-mllib-local_$(SCALA_VERSION)-sources.jar ../mllib-local/target/spark-mllib-local_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-mllib-local_$(SCALA_VERSION).pom ../mllib-local/pom.xml
+
 file 444 - - share/spark-$(VERSION)/lib/spark-network-common_$(SCALA_VERSION).jar ../common/network-common/target/spark-network-common_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
 file 444 - - share/spark-$(VERSION)/lib/spark-network-common_$(SCALA_VERSION)-sources.jar ../common/network-common/target/spark-network-common_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
 file 444 - - share/spark-$(VERSION)/lib/spark-network-common_$(SCALA_VERSION).pom ../common/network-common/pom.xml
@@ -177,6 +185,10 @@ file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume_$(SCALA_VERSION).p
 file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSION).jar ../external/flume-sink/target/spark-streaming-flume-sink_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
 file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSION)-sources.jar ../external/flume-sink/target/spark-streaming-flume-sink_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
 file 444 - - share/spark-$(VERSION)/lib/spark-streaming-flume-sink_$(SCALA_VERSION).pom ../external/flume-sink/pom.xml
+
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION).jar ../external/kafka-0-10/target/spark-streaming-kafka-0-10_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION)-sources.jar ../external/kafka-0-10/target/spark-streaming-kafka-0-10_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
+file 444 - - share/spark-$(VERSION)/lib/spark-streaming-kafka_$(SCALA_VERSION).pom ../external/kafka-0-10/pom.xml
 
 file 444 - - share/spark-$(VERSION)/lib/spark-tags_$(SCALA_VERSION).jar ../common/tags/target/spark-tags_$(SCALA_VERSION)-$(BASE_SPARK_VERSION).jar
 file 444 - - share/spark-$(VERSION)/lib/spark-tags_$(SCALA_VERSION)-sources.jar ../common/tags/target/spark-tags_$(SCALA_VERSION)-$(BASE_SPARK_VERSION)-sources.jar
@@ -336,7 +348,7 @@ symlink 0755 - - share/spark-$(VERSION)/lib/datanucleus-api-jdo.jar datanucleus-
 symlink 0755 - - share/spark-$(VERSION)/lib/datanucleus-core.jar datanucleus-core-3.2.10.jar
 symlink 0755 - - share/spark-$(VERSION)/lib/datanucleus-rdbms.jar datanucleus-rdbms-3.2.9.jar
 
-file 444 - - share/spark-$(VERSION)/lib/derby-10.11.1.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/derby-10.11.1.1.jar
+file 444 - - share/spark-$(VERSION)/lib/derby-10.12.1.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/derby-10.12.1.1.jar
 file 444 - - share/spark-$(VERSION)/lib/eigenbase-properties-1.1.5.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/eigenbase-properties-1.1.5.jar
 file 444 - - share/spark-$(VERSION)/lib/geronimo-j2ee-management_1.1_spec-1.0.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/geronimo-j2ee-management_1.1_spec-1.0.1.jar
 file 444 - - share/spark-$(VERSION)/lib/geronimo-jms_1.1_spec-1.1.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/geronimo-jms_1.1_spec-1.1.1.jar
@@ -360,11 +372,11 @@ file 444 - - share/spark-$(VERSION)/lib/hadoop-yarn-common-2.7.2.7.1604210306.ja
 file 444 - - share/spark-$(VERSION)/lib/hadoop-yarn-server-common-2.7.2.7.1604210306.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hadoop-yarn-server-common-2.7.2.7.1604210306.jar
 file 444 - - share/spark-$(VERSION)/lib/hadoop-yarn-server-web-proxy-2.7.2.7.1604210306.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hadoop-yarn-server-web-proxy-2.7.2.7.1604210306.jar
 file 444 - - share/spark-$(VERSION)/lib/hcatalog-support-1.2.1.8.1604270032.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hcatalog-support-1.2.1.8.1604270032.jar
-file 444 - - share/spark-$(VERSION)/lib/hive-exec-1.2.1.spark2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-exec-1.2.1.spark2.jar
-file 444 - - share/spark-$(VERSION)/lib/hive-metastore-1.2.1.spark2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-metastore-1.2.1.spark2.jar
 file 444 - - share/spark-$(VERSION)/lib/hive-beeline-1.2.1.spark2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-beeline-1.2.1.spark2.jar
 file 444 - - share/spark-$(VERSION)/lib/hive-cli-1.2.1.spark2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-cli-1.2.1.spark2.jar
+file 444 - - share/spark-$(VERSION)/lib/hive-exec-1.2.1.spark2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-exec-1.2.1.spark2.jar
 file 444 - - share/spark-$(VERSION)/lib/hive-jdbc-1.2.1.spark2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-jdbc-1.2.1.spark2.jar
+file 444 - - share/spark-$(VERSION)/lib/hive-metastore-1.2.1.spark2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-metastore-1.2.1.spark2.jar
 file 444 - - share/spark-$(VERSION)/lib/hk2-api-2.4.0-b34.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hk2-api-2.4.0-b34.jar
 file 444 - - share/spark-$(VERSION)/lib/hk2-locator-2.4.0-b34.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hk2-locator-2.4.0-b34.jar
 file 444 - - share/spark-$(VERSION)/lib/hk2-utils-2.4.0-b34.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hk2-utils-2.4.0-b34.jar
@@ -406,7 +418,7 @@ file 444 - - share/spark-$(VERSION)/lib/jersey-server-2.22.2.jar ../assembly/tar
 file 444 - - share/spark-$(VERSION)/lib/jets3t-0.9.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jets3t-0.9.3.jar
 file 444 - - share/spark-$(VERSION)/lib/jetty-6.1.26.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jetty-6.1.26.jar
 file 444 - - share/spark-$(VERSION)/lib/jetty-util-6.1.26.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jetty-util-6.1.26.jar
-file 444 - - share/spark-$(VERSION)/lib/jline-2.12.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jline-2.12.jar
+file 444 - - share/spark-$(VERSION)/lib/jline-2.12.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jline-2.12.1.jar
 file 444 - - share/spark-$(VERSION)/lib/jms-1.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jms-1.1.jar
 file 444 - - share/spark-$(VERSION)/lib/joda-time-2.9.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/joda-time-2.9.3.jar
 file 444 - - share/spark-$(VERSION)/lib/jodd-core-3.5.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jodd-core-3.5.2.jar
@@ -454,7 +466,7 @@ file 444 - - share/spark-$(VERSION)/lib/parquet-jackson-1.7.0.jar ../assembly/ta
 file 444 - - share/spark-$(VERSION)/lib/pmml-model-1.2.15.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pmml-model-1.2.15.jar 
 file 444 - - share/spark-$(VERSION)/lib/pmml-schema-1.2.15.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pmml-schema-1.2.15.jar
 file 444 - - share/spark-$(VERSION)/lib/protobuf-java-2.5.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/protobuf-java-2.5.0.jar 
-file 444 - - share/spark-$(VERSION)/lib/py4j-0.10.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/py4j-0.10.1.jar
+file 444 - - share/spark-$(VERSION)/lib/py4j-0.10.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/py4j-0.10.3.jar
 file 444 - - share/spark-$(VERSION)/lib/pyrolite-4.9.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pyrolite-4.9.jar
 file 444 - - share/spark-$(VERSION)/lib/RoaringBitmap-0.5.11.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/RoaringBitmap-0.5.11.jar
 file 444 - - share/spark-$(VERSION)/lib/scala-compiler-2.11.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/scala-compiler-2.11.8.jar
@@ -466,7 +478,7 @@ file 444 - - share/spark-$(VERSION)/lib/scala-xml_2.11-1.0.2.jar ../assembly/tar
 file 444 - - share/spark-$(VERSION)/lib/slf4j-api-1.7.16.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/slf4j-api-1.7.16.jar
 file 444 - - share/spark-$(VERSION)/lib/slf4j-log4j12-1.7.16.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/slf4j-log4j12-1.7.16.jar
 file 444 - - share/spark-$(VERSION)/lib/snappy-0.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/snappy-0.2.jar
-file 444 - - share/spark-$(VERSION)/lib/snappy-java-1.1.2.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/snappy-java-1.1.2.4.jar
+file 444 - - share/spark-$(VERSION)/lib/snappy-java-1.1.2.6.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/snappy-java-1.1.2.6.jar
 file 444 - - share/spark-$(VERSION)/lib/spire_2.11-0.7.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/spire_2.11-0.7.4.jar
 file 444 - - share/spark-$(VERSION)/lib/spire-macros_2.11-0.7.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/spire-macros_2.11-0.7.4.jar
 file 444 - - share/spark-$(VERSION)/lib/spring-aop-3.0.3.RELEASE.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/spring-aop-3.0.3.RELEASE.jar
