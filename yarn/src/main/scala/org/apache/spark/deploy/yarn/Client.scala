@@ -838,9 +838,9 @@ private[spark] class Client(
       }
     }
 
-    // go ahead and include any archives into the PYTHONPATH in case users upload 
+    // go ahead and include any archives into the PYTHONPATH in case users upload
     // modules/packages via archives they will automatically be included
-    if (sparkConf.getBoolean("spark.yarn.isPython", false) && 
+    if (sparkConf.getBoolean("spark.yarn.isPython", false) &&
         sparkConf.getBoolean("spark.yarn.includeArchivesPythonPath", false)) {
       sparkConf.get(ARCHIVES_TO_DISTRIBUTE).foreach { path =>
         val trimmedPath = path.trim()
