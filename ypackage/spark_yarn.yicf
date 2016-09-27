@@ -76,7 +76,7 @@ symlink 0755 - - share/spark-$(VERSION)/jars lib
 glob - - - share/spark-$(VERSION)/data/mllib/ ../data/mllib/*
 glob - - - share/spark-$(VERSION)/data/mllib/als/ ../data/mllib/als/*
 glob - - - share/spark-$(VERSION)/data/mllib/lr-data/ ../data/mllib/lr-data/*
-glob - - - share/spark-$(VERSION)/data/mllib/lr-data/ ../data/mllib/ridge-data/*
+glob - - - share/spark-$(VERSION)/data/mllib/ridge-data/ ../data/mllib/ridge-data/*
 glob - - - share/spark-$(VERSION)/data/streaming/ ../data/streaming/*
 glob - - - share/spark-$(VERSION)/data/graphx/ ../data/graphx/*
 
@@ -86,6 +86,8 @@ glob - - - share/spark-$(VERSION)/examples/src/main/python/ ../examples/src/main
 glob - - - share/spark-$(VERSION)/examples/src/main/python/mllib/ ../examples/src/main/python/mllib/*
 glob - - - share/spark-$(VERSION)/examples/src/main/python/ml/ ../examples/src/main/python/ml/*
 glob - - - share/spark-$(VERSION)/examples/src/main/python/streaming/ ../examples/src/main/python/streaming/*
+glob - - - share/spark-$(VERSION)/examples/src/main/python/sql/ ../examples/src/main/python/sql/*
+glob - - - share/spark-$(VERSION)/examples/src/main/python/sql/streaming/ ../examples/src/main/python/sql/streaming/*
 
 glob - - - share/spark-$(VERSION)/examples/src/main/r/ ../examples/src/main/r/*
 
