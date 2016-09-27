@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -41,13 +40,6 @@ import org.apache.hadoop.yarn.server.api.*;
 import org.apache.spark.network.util.LevelDBProvider;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
-import org.apache.spark.network.shuffle.protocol.ExecutorShuffleInfo;
-import org.apache.spark.network.util.LevelDBProvider;
-import org.fusesource.leveldbjni.JniDBFactory;
-import org.fusesource.leveldbjni.internal.NativeDB;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.DBIterator;
-import org.iq80.leveldb.Options;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -247,7 +239,6 @@ public class YarnShuffleService extends AuxiliaryService {
     return key.getBytes(StandardCharsets.UTF_8);
   }
 
-
   @Override
   public void initializeApplication(ApplicationInitializationContext context) {
     String appId = context.getApplicationId().toString();
@@ -427,3 +418,4 @@ public class YarnShuffleService extends AuxiliaryService {
   }
 
 }
+
