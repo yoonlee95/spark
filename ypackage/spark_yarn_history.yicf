@@ -21,7 +21,8 @@ PERM = 0444
 
 YINST set spark_daemon_user mapred
 YINST set spark_daemon_memory 8g
-YINST set spark_history_retained_applications 5000
+YINST set spark_history_retained_applications 2000
+YINST set spark_history_history_maxApplications 5000
 YINST set spark_history_cleaner_enable true
 YINST set spark_history_cleaner_interval 1d
 YINST set spark_history_cleaner_max_age 14d

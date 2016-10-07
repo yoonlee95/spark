@@ -74,6 +74,6 @@ cat <<ENV
 
 SPARK_DAEMON_MEMORY=${spark_daemon_memory}
 SPARK_DAEMON_JAVA_OPTS="-Dproc_sparkhistoryserver ${spark_all_history_gc_opts}"
-SPARK_HISTORY_OPTS="-Dspark.ui.filters=yjava.servlet.filter.BouncerFilter -Dspark.history.kerberos.enabled=true -Dspark.history.kerberos.principal=${spark_kerberos_principal} -Dspark.history.kerberos.keytab=${spark_kerberos_keytab} -Dspark.history.ui.acls.enable=true -Dspark.authenticate=false -Dspark.ui.acls.enable=false -Dspark.history.retainedApplications=${spark_history_retained_applications} -Dspark.history.fs.cleaner.enabled=${spark_history_cleaner_enable} -Dspark.history.fs.cleaner.maxAge=${spark_history_cleaner_max_age} -Dspark.history.fs.cleaner.interval=${spark_history_cleaner_interval} ${spark_history_bouncer_filter_params}"
+SPARK_HISTORY_OPTS="-Dspark.ui.filters=yjava.servlet.filter.BouncerFilter -Dspark.history.kerberos.enabled=true -Dspark.history.kerberos.principal=${spark_kerberos_principal} -Dspark.history.kerberos.keytab=${spark_kerberos_keytab} -Dspark.history.ui.acls.enable=true -Dspark.authenticate=false -Dspark.ui.acls.enable=false -Dspark.history.retainedApplications=${spark_history_retained_applications} -Dspark.history.fs.cleaner.enabled=${spark_history_cleaner_enable} -Dspark.history.fs.cleaner.maxAge=${spark_history_cleaner_max_age} -Dspark.history.fs.cleaner.interval=${spark_history_cleaner_interval} ${spark_history_bouncer_filter_params} -Dspark.history.ui.maxApplications=${spark_history_history_maxApplications}"
 
 ENV
