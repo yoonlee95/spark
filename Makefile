@@ -50,7 +50,7 @@ spark_bld: /tmp/rinstall/bin/R $(PKG_DIR)/SCALA_VERSION_SUFFIX update_pom_versio
 	if [ "$(SCALA_VERSION_MAKE)" != "$(DEFAULT_SCALA_VERSION)" ]; then \
 		./dev/change-scala-version.sh $(SCALA_VERSION_MAKE); \
 	fi
-	PATH=/tmp/rinstall/bin:$$PATH $(MVN) -Dscala-$(SCALA_VERSION_MAKE) $(DIST_MVN_PROFILES) -DskipTests package && cd ./assembly/target/scala-${DEFAULT_SCALA_VERSION}/jars/ && tar cvfz yspark-jars-${NEW_DIST_VERSION}.tgz *.jar 
+	PATH=/tmp/rinstall/bin:$$PATH $(MVN) -Dscala-$(SCALA_VERSION_MAKE) $(DIST_MVN_PROFILES) -DskipTests clean package && cd ./assembly/target/scala-${DEFAULT_SCALA_VERSION}/jars/ && tar cvfz yspark-jars-${NEW_DIST_VERSION}.tgz *.jar 
 
 spark_test:
 	(export SPARK_JAVA_OPTS="-Dspark.authenticate=false" && export MAVEN_OPTS="-Xmx3096m -XX:PermSize=128m -XX:MaxPermSize=2048m" && $(MVN) -P$(HADOOP_PROFILE) -P$(YARN_PROFILE) -Dmaven.test.error.ignore=true -Dmaven.test.failure.ignore=true -DMaxPermGen=1024m install test)
