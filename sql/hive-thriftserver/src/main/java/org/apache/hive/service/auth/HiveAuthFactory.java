@@ -108,7 +108,8 @@ public class HiveAuthFactory {
       if (authTypeStr.equalsIgnoreCase(AuthTypes.KERBEROS.getAuthName())) {
         saslServer = ShimLoader.getHadoopThriftAuthBridge()
           .createServer(conf.getVar(ConfVars.HIVE_SERVER2_KERBEROS_KEYTAB),
-                        conf.getVar(ConfVars.HIVE_SERVER2_KERBEROS_PRINCIPAL));
+                        conf.getVar(ConfVars.HIVE_SERVER2_KERBEROS_PRINCIPAL),
+                        conf.getVar(ConfVars.HIVE_SERVER2_CLIENT_KERBEROS_PRINCIPAL));
         // start delegation token manager
         try {
           // rawStore is only necessary for DBTokenStore
@@ -142,7 +143,7 @@ public class HiveAuthFactory {
     TTransportFactory transportFactory;
     if (authTypeStr.equalsIgnoreCase(AuthTypes.KERBEROS.getAuthName())) {
       try {
-        transportFactory = saslServer.createTransportFactory(getSaslProperties());
+        transportFactory = saslServer.createTransportFactory(getSaslProperties(), conf);
       } catch (TTransportException e) {
         throw new LoginException(e.getMessage());
       }
