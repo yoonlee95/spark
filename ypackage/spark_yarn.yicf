@@ -341,13 +341,13 @@ file 444 - - share/spark-$(VERSION)/lib/core-1.1.2.jar ../assembly/target/scala-
 file 444 - - share/spark-$(VERSION)/lib/curator-client-2.6.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/curator-client-2.6.0.jar
 file 444 - - share/spark-$(VERSION)/lib/curator-framework-2.6.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/curator-framework-2.6.0.jar
 file 444 - - share/spark-$(VERSION)/lib/curator-recipes-2.6.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/curator-recipes-2.6.0.jar
-file 444 - - share/spark-$(VERSION)/lib/datanucleus-api-jdo-3.0.7.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/datanucleus-api-jdo-3.0.7.jar
+file 444 - - share/spark-$(VERSION)/lib/datanucleus-api-jdo-3.2.6.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/datanucleus-api-jdo-3.2.6.jar
 file 444 - - share/spark-$(VERSION)/lib/datanucleus-core-3.2.10.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/datanucleus-core-3.2.10.jar
-file 444 - - share/spark-$(VERSION)/lib/datanucleus-rdbms-3.0.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/datanucleus-rdbms-3.0.8.jar
+file 444 - - share/spark-$(VERSION)/lib/datanucleus-rdbms-3.2.9.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/datanucleus-rdbms-3.2.9.jar
 
-symlink 0755 - - share/spark-$(VERSION)/lib/datanucleus-api-jdo.jar datanucleus-api-jdo-3.0.7.jar
+symlink 0755 - - share/spark-$(VERSION)/lib/datanucleus-api-jdo.jar datanucleus-api-jdo-3.2.6.jar
 symlink 0755 - - share/spark-$(VERSION)/lib/datanucleus-core.jar datanucleus-core-3.2.10.jar
-symlink 0755 - - share/spark-$(VERSION)/lib/datanucleus-rdbms.jar datanucleus-rdbms-3.0.8.jar
+symlink 0755 - - share/spark-$(VERSION)/lib/datanucleus-rdbms.jar datanucleus-rdbms-3.2.9.jar
 
 file 444 - - share/spark-$(VERSION)/lib/derby-10.12.1.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/derby-10.12.1.1.jar
 file 444 - - share/spark-$(VERSION)/lib/eigenbase-properties-1.1.5.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/eigenbase-properties-1.1.5.jar
