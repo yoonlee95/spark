@@ -465,7 +465,7 @@ file 444 - - share/spark-$(VERSION)/lib/pmml-model-1.2.15.jar ../assembly/target
 file 444 - - share/spark-$(VERSION)/lib/pmml-schema-1.2.15.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pmml-schema-1.2.15.jar
 file 444 - - share/spark-$(VERSION)/lib/protobuf-java-2.5.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/protobuf-java-2.5.0.jar 
 file 444 - - share/spark-$(VERSION)/lib/py4j-0.10.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/py4j-0.10.3.jar
-file 444 - - share/spark-$(VERSION)/lib/pyrolite-4.9.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pyrolite-4.9.jar
+file 444 - - share/spark-$(VERSION)/lib/pyrolite-4.13.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pyrolite-4.13.jar
 file 444 - - share/spark-$(VERSION)/lib/RoaringBitmap-0.5.11.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/RoaringBitmap-0.5.11.jar
 file 444 - - share/spark-$(VERSION)/lib/scala-compiler-2.11.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/scala-compiler-2.11.8.jar
 file 444 - - share/spark-$(VERSION)/lib/scala-library-2.11.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/scala-library-2.11.8.jar
