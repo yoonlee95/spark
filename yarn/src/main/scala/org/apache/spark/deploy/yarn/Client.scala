@@ -1430,11 +1430,13 @@ private object Client extends Logging {
       }
     }
 
-    // Yahoo specific workaround to make sure newer version of avro picked up before
-    // the older avro version from hive is picked up
-    if (sparkConf.getBoolean("spark.admin.yarn.avroClasspathHack", true)) {
-      val jars = sparkConf.getOption("spark.admin.yarn.avroClasses").
-        getOrElse("avro-1.7.7.jar,avro-ipc-1.7.7.jar,avro-mapred-1.7.7-hadoop2.jar")
+    // Yahoo specific workaround to make sure newer(or right) versions of jars are picked up before
+    // the older version of jars coming from yahoo hive
+    if (sparkConf.getBoolean("spark.admin.yarn.classpathHack", true)) {
+      val avroJars = "avro-1.7.7.jar,avro-ipc-1.7.7.jar,avro-mapred-1.7.7-hadoop2.jar"
+      val commonsJar = "commons-lang3-3.3.2.jar"
+      val jars = sparkConf.getOption("spark.admin.yarn.hackClasses").
+        getOrElse(avroJars + "," + commonsJar )
       jars.split(',').foreach { jar =>
         addClasspathEntry(buildPath(YarnSparkHadoopUtil.expandEnvironment(Environment.PWD),
           LOCALIZED_LIB_DIR, jar.trim()), env)
