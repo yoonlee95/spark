@@ -1397,6 +1397,21 @@ private object Client extends Logging {
       sparkConf: SparkConf,
       env: HashMap[String, String],
       extraClassPath: Option[String] = None): Unit = {
+
+    // Yahoo specific workaround to make sure newer(or right) versions of jars are picked up before
+    // the older version of jars coming from yahoo hive
+    // Do this first so user can't override with extraClassPath
+    if (sparkConf.getBoolean("spark.admin.yarn.classpathHack", true)) {
+      val avroJars = "avro-1.7.7.jar,avro-ipc-1.7.7.jar,avro-mapred-1.7.7-hadoop2.jar"
+      val commonsJar = "commons-lang3-3.3.2.jar"
+      val jars = sparkConf.getOption("spark.admin.yarn.hackClasses").
+        getOrElse(avroJars + "," + commonsJar )
+      jars.split(',').foreach { jar =>
+        addClasspathEntry(buildPath(YarnSparkHadoopUtil.expandEnvironment(Environment.PWD),
+          LOCALIZED_LIB_DIR, jar.trim()), env)
+      }
+    }
+
     extraClassPath.foreach { cp =>
       addClasspathEntry(getClusterPath(sparkConf, cp), env)
     }
@@ -1427,19 +1442,6 @@ private object Client extends Logging {
         }
       secondaryJars.foreach { x =>
         addFileToClasspath(sparkConf, conf, x, null, env)
-      }
-    }
-
-    // Yahoo specific workaround to make sure newer(or right) versions of jars are picked up before
-    // the older version of jars coming from yahoo hive
-    if (sparkConf.getBoolean("spark.admin.yarn.classpathHack", true)) {
-      val avroJars = "avro-1.7.7.jar,avro-ipc-1.7.7.jar,avro-mapred-1.7.7-hadoop2.jar"
-      val commonsJar = "commons-lang3-3.3.2.jar"
-      val jars = sparkConf.getOption("spark.admin.yarn.hackClasses").
-        getOrElse(avroJars + "," + commonsJar )
-      jars.split(',').foreach { jar =>
-        addClasspathEntry(buildPath(YarnSparkHadoopUtil.expandEnvironment(Environment.PWD),
-          LOCALIZED_LIB_DIR, jar.trim()), env)
       }
     }
 
