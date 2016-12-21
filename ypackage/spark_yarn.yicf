@@ -75,7 +75,6 @@ symlink 0755 - - share/spark-$(VERSION)/jars lib
 
 glob - - - share/spark-$(VERSION)/data/mllib/ ../data/mllib/*
 glob - - - share/spark-$(VERSION)/data/mllib/als/ ../data/mllib/als/*
-glob - - - share/spark-$(VERSION)/data/mllib/lr-data/ ../data/mllib/lr-data/*
 glob - - - share/spark-$(VERSION)/data/mllib/ridge-data/ ../data/mllib/ridge-data/*
 glob - - - share/spark-$(VERSION)/data/streaming/ ../data/streaming/*
 glob - - - share/spark-$(VERSION)/data/graphx/ ../data/graphx/*
@@ -90,6 +89,7 @@ glob - - - share/spark-$(VERSION)/examples/src/main/python/sql/ ../examples/src/
 glob - - - share/spark-$(VERSION)/examples/src/main/python/sql/streaming/ ../examples/src/main/python/sql/streaming/*
 
 glob - - - share/spark-$(VERSION)/examples/src/main/r/ ../examples/src/main/r/*
+glob - - - share/spark-$(VERSION)/examples/src/main/r/ml/ ../examples/src/main/r/ml/*
 
 glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/ ../examples/src/main/java/org/apache/spark/examples/*
 glob - - - share/spark-$(VERSION)/examples/src/main/java/org/apache/spark/examples/ml/ ../examples/src/main/java/org/apache/spark/examples/ml/*
@@ -211,6 +211,7 @@ file 444 - - share/spark-$(VERSION)/RELEASE RELEASE
 file 444 - - share/spark-$(VERSION)/README.md ../README.md
 
 file 755 - - share/spark-$(VERSION)/bin/beeline ../bin/beeline
+file 755 - - share/spark-$(VERSION)/bin/find-spark-home ../bin/find-spark-home
 file 755 - - share/spark-$(VERSION)/bin/load-spark-env.sh ../bin/load-spark-env.sh
 file 755 - - share/spark-$(VERSION)/bin/pyspark ../bin/pyspark
 file 755 - - share/spark-$(VERSION)/bin/run-example ../bin/run-example
@@ -234,8 +235,9 @@ glob - - - share/spark-$(VERSION)/R/lib/SparkR/worker/ ../R/lib/SparkR/worker/*
 file 755 - - share/spark-$(VERSION)/python/run-tests ../python/run-tests
 glob - - - share/spark-$(VERSION)/python/lib/ ../python/lib/*
 glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.py
-glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.txt
 glob - - - share/spark-$(VERSION)/python/test_support/ ../python/test_support/*.zip
+glob - - - share/spark-$(VERSION)/python/test_support/hello/ ../python/test_support/hello/*.txt
+glob - - - share/spark-$(VERSION)/python/test_support/hello/sub_hello/ ../python/test_support/hello/sub_hello/*.txt
 glob - - - share/spark-$(VERSION)/python/test_support/sql/ ../python/test_support/sql/*.csv
 glob - - - share/spark-$(VERSION)/python/test_support/sql/ ../python/test_support/sql/*.json
 glob - - - share/spark-$(VERSION)/python/test_support/sql/ ../python/test_support/sql/*.txt
@@ -248,6 +250,7 @@ glob - - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/ye
 glob - - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2015/month=10/day=26/ ../python/test_support/sql/parquet_partitioned/year=2015/month=10/day=26/*.parquet
 glob - - - share/spark-$(VERSION)/python/test_support/sql/parquet_partitioned/year=2015/month=9/day=1/ ../python/test_support/sql/parquet_partitioned/year=2015/month=9/day=1/*.parquet
 glob - - - share/spark-$(VERSION)/python/test_support/sql/streaming/ ../python/test_support/sql/streaming/*.txt
+
 glob - - - share/spark-$(VERSION)/python/pyspark/ ../python/pyspark/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/mllib/ ../python/pyspark/mllib/*.py
 glob - - - share/spark-$(VERSION)/python/pyspark/mllib/stat/ ../python/pyspark/mllib/stat/*.py
@@ -263,31 +266,31 @@ file 755 - - share/spark-$(VERSION)/sbin/spark-config.sh ../sbin/spark-config.sh
 file 755 - - share/spark-$(VERSION)/sbin/spark-daemon.sh ../sbin/spark-daemon.sh
 file 755 - - share/spark-$(VERSION)/sbin/spark-daemons.sh ../sbin/spark-daemons.sh
 file 755 - - share/spark-$(VERSION)/sbin/start-all.sh ../sbin/start-all.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-history-server.sh ../sbin/start-history-server.sh
 file 755 - - share/spark-$(VERSION)/sbin/start-master.sh ../sbin/start-master.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-mesos-dispatcher.sh ../sbin/start-mesos-dispatcher.sh 
+file 755 - - share/spark-$(VERSION)/sbin/start-mesos-shuffle-service.sh ../sbin/start-mesos-shuffle-service.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-shuffle-service.sh ../sbin/start-shuffle-service.sh
 file 755 - - share/spark-$(VERSION)/sbin/start-slave.sh ../sbin/start-slave.sh
 file 755 - - share/spark-$(VERSION)/sbin/start-slaves.sh ../sbin/start-slaves.sh
+file 755 - - share/spark-$(VERSION)/sbin/start-thriftserver.sh ../sbin/start-thriftserver.sh
 file 755 - - share/spark-$(VERSION)/sbin/stop-all.sh ../sbin/stop-all.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-history-server.sh ../sbin/stop-history-server.sh
 file 755 - - share/spark-$(VERSION)/sbin/stop-master.sh ../sbin/stop-master.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-mesos-shuffle-service.sh ../sbin/stop-mesos-shuffle-service.sh
+file 755 - - share/spark-$(VERSION)/sbin/stop-mesos-dispatcher.sh ../sbin/stop-mesos-dispatcher.sh 
 file 755 - - share/spark-$(VERSION)/sbin/stop-slave.sh ../sbin/stop-slave.sh
 file 755 - - share/spark-$(VERSION)/sbin/stop-slaves.sh ../sbin/stop-slaves.sh
-file 755 - - share/spark-$(VERSION)/sbin/start-history-server.sh ../sbin/start-history-server.sh
-file 755 - - share/spark-$(VERSION)/sbin/stop-history-server.sh ../sbin/stop-history-server.sh
-file 755 - - share/spark-$(VERSION)/sbin/start-thriftserver.sh ../sbin/start-thriftserver.sh
 file 755 - - share/spark-$(VERSION)/sbin/stop-thriftserver.sh ../sbin/stop-thriftserver.sh
-file 755 - - share/spark-$(VERSION)/sbin/start-shuffle-service.sh ../sbin/start-shuffle-service.sh
 file 755 - - share/spark-$(VERSION)/sbin/stop-shuffle-service.sh ../sbin/stop-shuffle-service.sh
-file 755 - - share/spark-$(VERSION)/sbin/start-mesos-dispatcher.sh ../sbin/start-mesos-dispatcher.sh 
-file 755 - - share/spark-$(VERSION)/sbin/stop-mesos-dispatcher.sh ../sbin/stop-mesos-dispatcher.sh 
-file 755 - - share/spark-$(VERSION)/sbin/start-mesos-shuffle-service.sh ../sbin/start-mesos-shuffle-service.sh
-file 755 - - share/spark-$(VERSION)/sbin/stop-mesos-shuffle-service.sh ../sbin/stop-mesos-shuffle-service.sh
 
+file 644 - - share/spark-$(VERSION)/conf/docker.properties.template ../conf/docker.properties.template
+file 644 - - share/spark-$(VERSION)/conf/fairscheduler.xml.template ../conf/fairscheduler.xml.template
 file 644 - - share/spark-$(VERSION)/conf/log4j.properties.template ../conf/log4j.properties.template
 file 644 - - share/spark-$(VERSION)/conf/metrics.properties.template ../conf/metrics.properties.template
-file 644 - - share/spark-$(VERSION)/conf/spark-env.sh.template ../conf/spark-env.sh.template
-file 644 - - share/spark-$(VERSION)/conf/spark-defaults.conf.template ../conf/spark-defaults.conf.template
-file 644 - - share/spark-$(VERSION)/conf/fairscheduler.xml.template ../conf/fairscheduler.xml.template
-file 644 - - share/spark-$(VERSION)/conf/docker.properties.template ../conf/docker.properties.template
 file 644 - - share/spark-$(VERSION)/conf/slaves.template ../conf/slaves.template
+file 644 - - share/spark-$(VERSION)/conf/spark-defaults.conf.template ../conf/spark-defaults.conf.template
+file 644 - - share/spark-$(VERSION)/conf/spark-env.sh.template ../conf/spark-env.sh.template
 
 file 444 - - share/spark-$(VERSION)/lib/activation-1.1.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/activation-1.1.1.jar
 file 444 - - share/spark-$(VERSION)/lib/activeio-core-3.1.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/activeio-core-3.1.2.jar
@@ -311,8 +314,8 @@ file 444 - - share/spark-$(VERSION)/lib/avro-mapred-1.7.7-hadoop2.jar ../assembl
 file 444 - - share/spark-$(VERSION)/lib/base64-2.3.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/base64-2.3.8.jar
 file 444 - - share/spark-$(VERSION)/lib/bcprov-jdk15on-1.51.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/bcprov-jdk15on-1.51.jar
 file 444 - - share/spark-$(VERSION)/lib/bonecp-0.8.0.RELEASE.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/bonecp-0.8.0.RELEASE.jar
-file 444 - - share/spark-$(VERSION)/lib/breeze_2.11-0.11.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/breeze_2.11-0.11.2.jar
-file 444 - - share/spark-$(VERSION)/lib/breeze-macros_2.11-0.11.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/breeze-macros_2.11-0.11.2.jar
+file 444 - - share/spark-$(VERSION)/lib/breeze_2.11-0.12.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/breeze_2.11-0.12.jar
+file 444 - - share/spark-$(VERSION)/lib/breeze-macros_2.11-0.12.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/breeze-macros_2.11-0.12.jar
 file 444 - - share/spark-$(VERSION)/lib/calcite-avatica-1.2.0-incubating.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/calcite-avatica-1.2.0-incubating.jar
 file 444 - - share/spark-$(VERSION)/lib/calcite-core-1.2.0-incubating.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/calcite-core-1.2.0-incubating.jar
 file 444 - - share/spark-$(VERSION)/lib/calcite-linq4j-1.2.0-incubating.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/calcite-linq4j-1.2.0-incubating.jar
@@ -323,7 +326,7 @@ file 444 - - share/spark-$(VERSION)/lib/commons-beanutils-core-1.8.0.jar ../asse
 file 444 - - share/spark-$(VERSION)/lib/commons-cli-1.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-cli-1.2.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-codec-1.10.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-codec-1.10.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-collections-3.2.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-collections-3.2.2.jar
-file 444 - - share/spark-$(VERSION)/lib/commons-compiler-2.7.6.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-compiler-2.7.6.jar
+file 444 - - share/spark-$(VERSION)/lib/commons-compiler-3.0.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-compiler-3.0.0.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-compress-1.4.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-compress-1.4.1.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-configuration-1.6.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-configuration-1.6.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-dbcp-1.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-dbcp-1.4.jar
@@ -331,7 +334,7 @@ file 444 - - share/spark-$(VERSION)/lib/commons-digester-1.8.jar ../assembly/tar
 file 444 - - share/spark-$(VERSION)/lib/commons-httpclient-3.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-httpclient-3.1.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-io-2.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-io-2.4.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-lang-2.6.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-lang-2.6.jar
-file 444 - - share/spark-$(VERSION)/lib/commons-lang3-3.3.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-lang3-3.3.2.jar
+file 444 - - share/spark-$(VERSION)/lib/commons-lang3-3.5.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-lang3-3.5.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-logging-1.1.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-logging-1.1.3.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-math3-3.4.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-math3-3.4.1.jar
 file 444 - - share/spark-$(VERSION)/lib/commons-net-2.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/commons-net-2.2.jar
@@ -394,7 +397,7 @@ file 444 - - share/spark-$(VERSION)/lib/jackson-mapper-asl-1.9.13.jar ../assembl
 file 444 - - share/spark-$(VERSION)/lib/jackson-module-paranamer-2.6.5.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jackson-module-paranamer-2.6.5.jar
 file 444 - - share/spark-$(VERSION)/lib/jackson-module-scala_2.11-2.6.5.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jackson-module-scala_2.11-2.6.5.jar
 file 444 - - share/spark-$(VERSION)/lib/jackson-xc-1.9.13.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jackson-xc-1.9.13.jar
-file 444 - - share/spark-$(VERSION)/lib/janino-2.7.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/janino-2.7.8.jar
+file 444 - - share/spark-$(VERSION)/lib/janino-3.0.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/janino-3.0.0.jar
 file 444 - - share/spark-$(VERSION)/lib/jasypt-1.7.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/jasypt-1.7.jar
 file 444 - - share/spark-$(VERSION)/lib/javassist-3.18.1-GA.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/javassist-3.18.1-GA.jar
 file 444 - - share/spark-$(VERSION)/lib/javax.annotation-api-1.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/javax.annotation-api-1.2.jar
@@ -438,7 +441,6 @@ file 444 - - share/spark-$(VERSION)/lib/libthrift-0.9.2.jar ../assembly/target/s
 file 444 - - share/spark-$(VERSION)/lib/log4j-1.2.17.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/log4j-1.2.17.jar
 file 444 - - share/spark-$(VERSION)/lib/lz4-1.3.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/lz4-1.3.0.jar
 file 444 - - share/spark-$(VERSION)/lib/mail-1.4.7.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/mail-1.4.7.jar
-file 444 - - share/spark-$(VERSION)/lib/mesos-0.21.1-shaded-protobuf.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/mesos-0.21.1-shaded-protobuf.jar
 file 444 - - share/spark-$(VERSION)/lib/metrics-core-3.1.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/metrics-core-3.1.2.jar
 file 444 - - share/spark-$(VERSION)/lib/metrics-graphite-3.1.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/metrics-graphite-3.1.2.jar
 file 444 - - share/spark-$(VERSION)/lib/metrics-json-3.1.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/metrics-json-3.1.2.jar
@@ -446,25 +448,24 @@ file 444 - - share/spark-$(VERSION)/lib/metrics-jvm-3.1.2.jar ../assembly/target
 file 444 - - share/spark-$(VERSION)/lib/minlog-1.3.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/minlog-1.3.0.jar
 file 444 - - share/spark-$(VERSION)/lib/mx4j-3.0.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/mx4j-3.0.2.jar
 file 444 - - share/spark-$(VERSION)/lib/netty-3.8.0.Final.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/netty-3.8.0.Final.jar
-file 444 - - share/spark-$(VERSION)/lib/netty-all-4.0.29.Final.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/netty-all-4.0.29.Final.jar
+file 444 - - share/spark-$(VERSION)/lib/netty-all-4.0.42.Final.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/netty-all-4.0.42.Final.jar
 file 444 - - share/spark-$(VERSION)/lib/objenesis-2.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/objenesis-2.1.jar
 file 444 - - share/spark-$(VERSION)/lib/opencsv-2.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/opencsv-2.3.jar
 file 444 - - share/spark-$(VERSION)/lib/org.osgi.core-4.1.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/org.osgi.core-4.1.0.jar
 file 444 - - share/spark-$(VERSION)/lib/oro-2.0.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/oro-2.0.8.jar
 file 444 - - share/spark-$(VERSION)/lib/osgi-resource-locator-1.0.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/osgi-resource-locator-1.0.1.jar
 file 444 - - share/spark-$(VERSION)/lib/paranamer-2.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/paranamer-2.3.jar 
-file 444 - - share/spark-$(VERSION)/lib/parquet-column-1.7.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-column-1.7.0.jar
-file 444 - - share/spark-$(VERSION)/lib/parquet-common-1.7.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-common-1.7.0.jar
-file 444 - - share/spark-$(VERSION)/lib/parquet-encoding-1.7.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-encoding-1.7.0.jar
+file 444 - - share/spark-$(VERSION)/lib/parquet-column-1.8.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-column-1.8.1.jar
+file 444 - - share/spark-$(VERSION)/lib/parquet-common-1.8.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-common-1.8.1.jar
+file 444 - - share/spark-$(VERSION)/lib/parquet-encoding-1.8.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-encoding-1.8.1.jar
 file 444 - - share/spark-$(VERSION)/lib/parquet-format-2.3.0-incubating.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-format-2.3.0-incubating.jar
-file 444 - - share/spark-$(VERSION)/lib/parquet-generator-1.7.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-generator-1.7.0.jar
-file 444 - - share/spark-$(VERSION)/lib/parquet-hadoop-1.7.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-hadoop-1.7.0.jar
+file 444 - - share/spark-$(VERSION)/lib/parquet-hadoop-1.8.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-hadoop-1.8.1.jar
 file 444 - - share/spark-$(VERSION)/lib/parquet-hadoop-bundle-1.6.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-hadoop-bundle-1.6.0.jar
-file 444 - - share/spark-$(VERSION)/lib/parquet-jackson-1.7.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-jackson-1.7.0.jar
+file 444 - - share/spark-$(VERSION)/lib/parquet-jackson-1.8.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/parquet-jackson-1.8.1.jar
 file 444 - - share/spark-$(VERSION)/lib/pmml-model-1.2.15.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pmml-model-1.2.15.jar 
 file 444 - - share/spark-$(VERSION)/lib/pmml-schema-1.2.15.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pmml-schema-1.2.15.jar
 file 444 - - share/spark-$(VERSION)/lib/protobuf-java-2.5.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/protobuf-java-2.5.0.jar 
-file 444 - - share/spark-$(VERSION)/lib/py4j-0.10.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/py4j-0.10.3.jar
+file 444 - - share/spark-$(VERSION)/lib/py4j-0.10.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/py4j-0.10.4.jar
 file 444 - - share/spark-$(VERSION)/lib/pyrolite-4.13.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/pyrolite-4.13.jar
 file 444 - - share/spark-$(VERSION)/lib/RoaringBitmap-0.5.11.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/RoaringBitmap-0.5.11.jar
 file 444 - - share/spark-$(VERSION)/lib/scala-compiler-2.11.8.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/scala-compiler-2.11.8.jar
@@ -488,7 +489,7 @@ file 444 - - share/spark-$(VERSION)/lib/stax-api-1.0-2.jar ../assembly/target/sc
 file 444 - - share/spark-$(VERSION)/lib/stream-2.7.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/stream-2.7.0.jar
 file 444 - - share/spark-$(VERSION)/lib/stringtemplate-3.2.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/stringtemplate-3.2.1.jar
 file 444 - - share/spark-$(VERSION)/lib/super-csv-2.2.0.jar  ../assembly/target/scala-$(SCALA_VERSION)/jars/super-csv-2.2.0.jar
-file 444 - - share/spark-$(VERSION)/lib/univocity-parsers-2.1.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/univocity-parsers-2.1.1.jar
+file 444 - - share/spark-$(VERSION)/lib/univocity-parsers-2.2.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/univocity-parsers-2.2.1.jar
 file 444 - - share/spark-$(VERSION)/lib/validation-api-1.1.0.Final.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/validation-api-1.1.0.Final.jar
 file 444 - - share/spark-$(VERSION)/lib/xbean-asm5-shaded-4.4.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/xbean-asm5-shaded-4.4.jar
 file 444 - - share/spark-$(VERSION)/lib/xercesImpl-2.9.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/xercesImpl-2.9.1.jar 
