@@ -25,6 +25,13 @@ PERM = 0444
 
 # Dependencies
 
+# directories used to install spark into hdfs sharelib
+dir 755 - - share/sharelib/lib/yspark_yarn-$(VERSION)/share/spark
+symlink 0755 - - share/sharelib/lib/yspark_yarn-$(VERSION)/share/spark/yspark-jars-$(BASE_DIST_VERSION).tgz ../../../spark-$(VERSION)/yspark-jars-$(BASE_DIST_VERSION).tgz
+symlink 0755 - - share/sharelib/lib/yspark_yarn-$(VERSION)/lib ../../../spark-$(VERSION)/lib
+symlink 0755 - - share/sharelib/lib/yspark_yarn-$(VERSION)/py4j-0.10.4-src.zip ../../../spark-$(VERSION)/python/lib/py4j-0.10.4-src.zip
+symlink 0755 - - share/sharelib/lib/yspark_yarn-$(VERSION)/pyspark.zip ../../../spark-$(VERSION)/python/lib/pyspark.zip
+
 dir 755 - - share/spark-$(VERSION)/bin
 dir 755 - - share/spark-$(VERSION)/sbin
 dir 755 - - share/spark-$(VERSION)/data
