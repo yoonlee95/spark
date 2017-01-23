@@ -116,6 +116,9 @@ package: update_pom_versions_and_ignore_changes $(PKG_DIR)/SCALA_VERSION_SUFFIX
 	cp ypackage/*tgz ${SRC_DIR}/target
 	$(unignore-working-tree-changes)
 
-git_tag:
+git_tag: build_description
 	git tag -f -a `dist_tag list yspark_yarn_2_0_latest_hadoop2  | grep yspark_yarn- | cut -d '-' -f 2 | cut -d ' ' -f 1` -m "yahoo version `dist_tag list  yspark_yarn_2_0_latest_hadoop2 | grep yspark_yarn- | cut -d '-' -f 2 | cut -d ' ' -f 1`"
 	git push origin `dist_tag list yspark_yarn_2_0_latest_hadoop2 | grep yspark_yarn- | grep yspark_yarn- | cut -d '-' -f 2 | cut -d ' ' -f 1`
+
+build_description:
+	@echo "Build Description: `dist_tag list yspark_yarn_2_0_latest_hadoop2 | grep yspark_yarn- | cut -d ' ' -f 1`"
