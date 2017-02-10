@@ -438,7 +438,7 @@ private[hive] class HiveClientImpl(
     val hiveTable = toHiveTable(table)
     // Do not use `table.qualifiedName` here because this may be a rename
     val qualifiedTableName = s"${table.database}.$tableName"
-    client.alterTable(qualifiedTableName, hiveTable)
+    client.alterTable(qualifiedTableName, hiveTable, null)
   }
 
   override def createPartitions(
@@ -518,7 +518,7 @@ private[hive] class HiveClientImpl(
       table: String,
       newParts: Seq[CatalogTablePartition]): Unit = withHiveState {
     val hiveTable = toHiveTable(getTable(db, table))
-    client.alterPartitions(table, newParts.map { p => toHivePartition(p, hiveTable) }.asJava)
+    client.alterPartitions(table, newParts.map { p => toHivePartition(p, hiveTable) }.asJava, null)
   }
 
   /**
