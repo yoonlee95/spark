@@ -87,7 +87,7 @@
     <dependency>
       <groupId>yahoo.yinst.hcat_common</groupId>
       <artifactId>hcatalog-support</artifactId>
-      <version>1.2.1.15.1701302348</version>
+      <version>${hive.version}</version>
       <type>jar</type>
       <scope>runtime</scope>
       <exclusions>

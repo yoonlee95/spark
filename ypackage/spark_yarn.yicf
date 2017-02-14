@@ -7,6 +7,7 @@ HADOOP_VERSION=`cat HADOOP_VERSION`
 SCALA_VERSION=`cat SCALA_VERSION`
 VERSION=`cat DIST_FULL_VERSION`
 BASE_SPARK_VERSION=`cat NEW_DIST_VERSION`
+HIVE_VERSION=1.2.1.16.1702140209
 
 # The following line is to get ymaven deps to work correctly.
 # https://yahoo.jiveon.com/docs/DOC-15122#jive_content_id_Why_am_I_getting_a_generateddummy_pom_when_I_retrieve_a_pom_for_a_yahooyinst_artifact
@@ -382,12 +383,12 @@ file 444 - - share/spark-$(VERSION)/lib/hadoop-yarn-client-2.7.2.7.1604210306.ja
 file 444 - - share/spark-$(VERSION)/lib/hadoop-yarn-common-2.7.2.7.1604210306.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hadoop-yarn-common-2.7.2.7.1604210306.jar
 file 444 - - share/spark-$(VERSION)/lib/hadoop-yarn-server-common-2.7.2.7.1604210306.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hadoop-yarn-server-common-2.7.2.7.1604210306.jar
 file 444 - - share/spark-$(VERSION)/lib/hadoop-yarn-server-web-proxy-2.7.2.7.1604210306.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hadoop-yarn-server-web-proxy-2.7.2.7.1604210306.jar
-file 444 - - share/spark-$(VERSION)/lib/hcatalog-support-1.2.1.15.1701302348.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hcatalog-support-1.2.1.15.1701302348.jar
-file 444 - - share/spark-$(VERSION)/lib/hive-beeline-1.2.1.15.1701302348.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-beeline-1.2.1.15.1701302348.jar
-file 444 - - share/spark-$(VERSION)/lib/hive-cli-1.2.1.15.1701302348.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-cli-1.2.1.15.1701302348.jar
-file 444 - - share/spark-$(VERSION)/lib/hive-exec-1.2.1.15.1701302348.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-exec-1.2.1.15.1701302348.jar
-file 444 - - share/spark-$(VERSION)/lib/hive-jdbc-1.2.1.15.1701302348.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-jdbc-1.2.1.15.1701302348.jar
-file 444 - - share/spark-$(VERSION)/lib/hive-metastore-1.2.1.15.1701302348.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-metastore-1.2.1.15.1701302348.jar
+file 444 - - share/spark-$(VERSION)/lib/hcatalog-support-$(HIVE_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hcatalog-support-$(HIVE_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/hive-beeline-$(HIVE_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-beeline-$(HIVE_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/hive-cli-$(HIVE_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-cli-$(HIVE_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/hive-exec-$(HIVE_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-exec-$(HIVE_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/hive-jdbc-$(HIVE_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-jdbc-$(HIVE_VERSION).jar
+file 444 - - share/spark-$(VERSION)/lib/hive-metastore-$(HIVE_VERSION).jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hive-metastore-$(HIVE_VERSION).jar
 file 444 - - share/spark-$(VERSION)/lib/hk2-api-2.4.0-b34.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hk2-api-2.4.0-b34.jar
 file 444 - - share/spark-$(VERSION)/lib/hk2-locator-2.4.0-b34.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hk2-locator-2.4.0-b34.jar
 file 444 - - share/spark-$(VERSION)/lib/hk2-utils-2.4.0-b34.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/hk2-utils-2.4.0-b34.jar
