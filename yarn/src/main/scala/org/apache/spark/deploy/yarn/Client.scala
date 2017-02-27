@@ -1403,7 +1403,7 @@ private object Client extends Logging {
     // Do this first so user can't override with extraClassPath
     if (sparkConf.getBoolean("spark.admin.yarn.classpathHack", true)) {
       val avroJars = "avro-1.7.7.jar,avro-ipc-1.7.7.jar,avro-mapred-1.7.7-hadoop2.jar"
-      val commonsJar = "commons-lang3-3.3.2.jar"
+      val commonsJar = "commons-lang3-3.5.jar"
       val jars = sparkConf.getOption("spark.admin.yarn.hackClasses").
         getOrElse(avroJars + "," + commonsJar )
       jars.split(',').foreach { jar =>
