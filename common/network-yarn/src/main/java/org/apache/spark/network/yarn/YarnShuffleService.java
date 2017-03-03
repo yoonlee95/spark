@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -363,17 +362,20 @@ public class YarnShuffleService extends AuxiliaryService {
           // make sure to move all DBs to the recovery path from the old NM local dirs.
           // If another DB was initialized first just make sure all the DBs are in the same
           // location.
-          File newLoc = new File(_recoveryPath.toUri().getPath(), dbFileName);
-          if (!newLoc.equals(f)) {
+          Path newLoc = new Path(_recoveryPath, dbFileName);
+          Path copyFrom = new Path(f.toURI()); 
+          if (!newLoc.equals(copyFrom)) {
+            logger.info("Moving " + copyFrom + " to: " + newLoc); 
             try {
-              Files.move(f.toPath(), newLoc.toPath());
+              FileSystem fs = FileSystem.getLocal(_conf);
+              fs.rename(copyFrom, newLoc);
             } catch (Exception e) {
               // Fail to move recovery file to new path, just continue on with new DB location
               logger.error("Failed to move recovery file {} to the path {}",
                 dbFileName, _recoveryPath.toString(), e);
             }
           }
-          return newLoc;
+          return new File(newLoc.toUri().getPath());
         }
       }
     }
