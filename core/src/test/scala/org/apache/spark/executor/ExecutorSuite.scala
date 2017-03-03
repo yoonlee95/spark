@@ -31,9 +31,12 @@ import org.apache.spark._
 import org.apache.spark.TaskState.TaskState
 import org.apache.spark.memory.MemoryManager
 import org.apache.spark.metrics.MetricsSystem
+import org.apache.spark.rdd.RDD
 import org.apache.spark.rpc.RpcEnv
 import org.apache.spark.scheduler.{FakeTask, Task}
 import org.apache.spark.serializer.JavaSerializer
+import org.apache.spark.shuffle.FetchFailedException
+import org.apache.spark.storage.BlockManagerId
 
 class ExecutorSuite extends SparkFunSuite {
 
