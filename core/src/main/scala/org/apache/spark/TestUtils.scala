@@ -33,6 +33,8 @@ import javax.tools.{JavaFileObject, SimpleJavaFileObject, ToolProvider}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.sys.process.{Process, ProcessLogger}
+import scala.util.Try
 
 import com.google.common.io.{ByteStreams, Files}
 

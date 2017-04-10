@@ -345,7 +345,16 @@ private[spark] class ApplicationMaster(
              splitText(0) + ":" + splitText(splitText.length-1)
           } else subText}
         .map { address => s"${address}${HistoryServer.UI_PATH_PREFIX}/${appId}/${attemptId}" }
+        .map { histaddr =>
+          if (securityMgr.getSSLOptions("historyServer").enabled) {
+            s"https://${histaddr}"
+          } else {
+            histaddr
+          }
+        }
         .getOrElse("")
+
+    logDebug("history server address is: " + historyAddress)
 
     val driverUrl = RpcEndpointAddress(
       _sparkConf.get("spark.driver.host"),
