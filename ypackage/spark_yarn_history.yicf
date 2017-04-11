@@ -31,8 +31,6 @@ YINST set spark_history_gc_opts -XX:+UseG1GC -XX:GCTimeLimit=90 -XX:ParallelGCTh
 YINST set spark_history_gc_log_dir 
 YINST set spark_history_ssl_port 50509
 YINST set spark_history_ssl_enabled true
-YINST set spark_history_ssl_keystore /etc/ssl/certs/prod/_red_ygrid_yahoo_com/mapred.jks
-YINST set spark_history_ssl_truststore /etc/ssl/certs/prod/_red_ygrid_yahoo_com/mapred.jks
 
 # Dependencies
 
