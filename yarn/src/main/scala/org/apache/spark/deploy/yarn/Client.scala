@@ -1452,6 +1452,13 @@ private object Client extends Logging {
     sys.env.get(ENV_DIST_CLASSPATH).foreach { cp =>
       addClasspathEntry(getClusterPath(sparkConf, cp), env)
     }
+
+    // Yahoo specific workaround to allow HUE to properly load jars into the classpath
+    // when user specifies extra jars
+    if (sparkConf.getBoolean("spark.admin.yarn.classpathAll", true)) {
+      addClasspathEntry(YarnSparkHadoopUtil.expandEnvironment(Environment.PWD) +
+        Path.SEPARATOR + "*", env)
+    }
   }
 
   /**
