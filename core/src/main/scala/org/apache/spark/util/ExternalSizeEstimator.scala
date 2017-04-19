@@ -42,7 +42,7 @@ import org.apache.spark.util.collection.OpenHashSet
  * estimate the size. However, a [[KnownSizeEstimation]] can provide a better estimation without
  * using [[SizeEstimator]].
  */
-private[spark] trait KnownSizeEstimation {
+private[spark] trait ExternalKnownSizeEstimation {
   def estimatedSize: Long
 }
 
@@ -55,7 +55,7 @@ private[spark] trait KnownSizeEstimation {
  * http://www.javaworld.com/javaworld/javaqa/2003-12/02-qa-1226-sizeof.html
  */
 @DeveloperApi
-object SizeEstimator extends Logging {
+object ExternalSizeEstimator extends Logging {
 
   /**
    * Estimate the number of bytes that the given object takes up on the JVM heap. The estimate
@@ -219,7 +219,7 @@ object SizeEstimator extends Logging {
       // general all ClassLoaders and Classes will be shared between objects anyway.
     } else {
       obj match {
-        case s: KnownSizeEstimation =>
+        case s: ExternalKnownSizeEstimation =>
           state.size += s.estimatedSize
         case _ =>
           val classInfo = getClassInfo(cls)
@@ -233,9 +233,9 @@ object SizeEstimator extends Logging {
 
   // Estimate the size of arrays larger than ARRAY_SIZE_FOR_SAMPLING by sampling.
   private val ARRAY_SIZE_FOR_SAMPLING = sparkConf.getInt(
-    "spark.sizeEstimate.arraySizeForSampling", 400)
+    "spark.externalSizeEstimate.arraySizeForSampling", 262145)
   // should be lower than ARRAY_SIZE_FOR_SAMPLING
-  private val ARRAY_SAMPLE_SIZE = sparkConf.getInt("spark.sizeEstimate.arraySampleSize", 100)
+  private val ARRAY_SAMPLE_SIZE = sparkConf.getInt("spark.externalSizeEstimate.arraySampleSize", 65536)
 
   private def visitArray(array: AnyRef, arrayClass: Class[_], state: SearchState) {
     val length = ScalaRunTime.array_length(array)
@@ -288,7 +288,7 @@ object SizeEstimator extends Logging {
       drawn.add(index)
       val obj = ScalaRunTime.array_apply(array, index).asInstanceOf[AnyRef]
       if (obj != null) {
-        size += SizeEstimator.estimate(obj, state.visited).toLong
+        size += ExternalSizeEstimator.estimate(obj, state.visited).toLong
       }
     }
     size

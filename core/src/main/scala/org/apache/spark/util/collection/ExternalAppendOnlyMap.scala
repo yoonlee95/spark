@@ -61,7 +61,7 @@ class ExternalAppendOnlyMap[K, V, C](
     blockManager: BlockManager = SparkEnv.get.blockManager,
     context: TaskContext = TaskContext.get(),
     serializerManager: SerializerManager = SparkEnv.get.serializerManager)
-  extends Spillable[SizeTracker](context.taskMemoryManager())
+  extends Spillable[ExternalSizeTracker](context.taskMemoryManager())
   with Serializable
   with Logging
   with Iterable[(K, C)] {
@@ -81,7 +81,7 @@ class ExternalAppendOnlyMap[K, V, C](
     this(createCombiner, mergeValue, mergeCombiners, serializer, blockManager, TaskContext.get())
   }
 
-  @volatile private var currentMap = new SizeTrackingAppendOnlyMap[K, C]
+  @volatile private var currentMap = new ExternalSizeTrackingAppendOnlyMap[K, C]
   private val spilledMaps = new ArrayBuffer[DiskMapIterator]
   private val sparkConf = SparkEnv.get.conf
   private val diskBlockManager = blockManager.diskBlockManager
@@ -158,7 +158,7 @@ class ExternalAppendOnlyMap[K, V, C](
         _peakMemoryUsedBytes = estimatedSize
       }
       if (maybeSpill(currentMap, estimatedSize)) {
-        currentMap = new SizeTrackingAppendOnlyMap[K, C]
+        currentMap = new ExternalSizeTrackingAppendOnlyMap[K, C]
       }
       currentMap.changeValue(curEntry._1, update)
       addElementsRead()
@@ -181,7 +181,7 @@ class ExternalAppendOnlyMap[K, V, C](
   /**
    * Sort the existing contents of the in-memory map and spill them to a temporary file on disk.
    */
-  override protected[this] def spill(collection: SizeTracker): Unit = {
+  override protected[this] def spill(collection: ExternalSizeTracker): Unit = {
     val inMemoryIterator = currentMap.destructiveSortedIterator(keyComparator)
     val diskMapIterator = spillMemoryIteratorToDisk(inMemoryIterator)
     spilledMaps += diskMapIterator
