@@ -16,6 +16,8 @@
  */
 
 package org.apache.spark.deploy.yarn
+import java.util.{Arrays, List => JList}
+import scala.collection.JavaConverters._
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.yarn.api.records._
