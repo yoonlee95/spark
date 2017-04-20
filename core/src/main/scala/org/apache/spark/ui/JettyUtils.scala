@@ -394,9 +394,7 @@ private[spark] object JettyUtils extends Logging {
     }
   }
 
-  private def createRedirectHttpsHandler(
-      httpsConnector: ServerConnector,
-      scheme: String): ContextHandler = {
+  private def createRedirectHttpsHandler(securePort: Int, scheme: String): ContextHandler = {
     val redirectHandler: ContextHandler = new ContextHandler
     redirectHandler.setContextPath("/")
     redirectHandler.setVirtualHosts(toVirtualHosts(REDIRECT_CONNECTOR_NAME))
@@ -409,8 +407,8 @@ private[spark] object JettyUtils extends Logging {
         if (baseRequest.isSecure) {
           return
         }
-        val httpsURI = createRedirectURI(scheme, baseRequest.getServerName,
-          httpsConnector.getLocalPort, baseRequest.getRequestURI, baseRequest.getQueryString)
+        val httpsURI = createRedirectURI(scheme, baseRequest.getServerName, securePort,
+          baseRequest.getRequestURI, baseRequest.getQueryString)
         response.setContentLength(0)
         response.sendRedirect(response.encodeRedirectURL(httpsURI))
         baseRequest.setHandled(true)
