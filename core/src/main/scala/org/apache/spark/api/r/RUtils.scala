@@ -31,7 +31,9 @@ private[spark] object RUtils {
    * Get the SparkR package path in the local spark distribution.
    */
   def localSparkRPackagePath: Option[String] = {
-    val sparkHome = sys.env.get("SPARK_HOME").orElse(sys.props.get("spark.test.home"))
+    // Allow R to work via oozie by adding the config spark.rpackage.home to find sparkr.zip
+    val sparkHome = sys.env.get("SPARK_HOME").orElse(sys.props.get("spark.rpackage.home")).
+      orElse(sys.props.get("spark.test.home"))
     sparkHome.map(
       Seq(_, "R", "lib").mkString(File.separator)
     )
