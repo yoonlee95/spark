@@ -1407,7 +1407,6 @@ Apart from these, the following properties are also available, and may be useful
   </td>
 </tr>
 <tr>
-<<<<<<< HEAD
   <td><code>spark.task.reaper.enabled</code></td>
   <td>false</td>
   <td>

@@ -1276,14 +1276,7 @@ class DAGScheduler(
                  |times: $maxConsecutiveStageAttempts.
                  |Most recent failure reason: $failureMessage""".stripMargin.replaceAll("\n", " ")
             }
-            failedStages += failedStage
-            failedStages += mapStage
             abortStage(failedStage, abortMessage, None)
-          } else if (failedStage.failedOnFetchAndShouldAbort(task.stageAttemptId)) {
-            abortStage(failedStage, s"$failedStage (${failedStage.name}) " +
-              s"has failed the maximum allowable number of " +
-              s"times: ${Stage.MAX_CONSECUTIVE_FETCH_FAILURES}. " +
-              s"Most recent failure reason: ${failureMessage}", None)
           } else {
             if (failedStages.isEmpty) {
               // Don't schedule an event to resubmit failed stages if failed isn't empty, because
@@ -1295,6 +1288,8 @@ class DAGScheduler(
                 override def run(): Unit = eventProcessLoop.post(ResubmitFailedStages)
               }, DAGScheduler.RESUBMIT_TIMEOUT, TimeUnit.MILLISECONDS)
             }
+            failedStages += failedStage
+            failedStages += mapStage
           }
           // Mark the map whose fetch failed as broken in the map stage
           if (mapId != -1) {
