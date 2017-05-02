@@ -1446,6 +1446,12 @@ Apart from these, the following properties are also available, and may be useful
     value, -1, disables this mechanism and prevents the executor from self-destructing. The purpose
     of this setting is to act as a safety-net to prevent runaway uncancellable tasks from rendering
     an executor unusable.
+</tr>
+<tr>
+  <td><code>spark.stage.maxConsecutiveAttempts</code></td>
+  <td>4</td>
+  <td>
+    Number of consecutive stage attempts allowed before a stage is aborted.
   </td>
 </tr>
 </table>

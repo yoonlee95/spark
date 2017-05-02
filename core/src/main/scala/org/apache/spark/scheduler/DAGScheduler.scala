@@ -187,6 +187,13 @@ class DAGScheduler(
   /** If enabled, FetchFailed will not cause stage retry, in order to surface the problem. */
   private val disallowStageRetryForTest = sc.getConf.getBoolean("spark.test.noStageRetry", false)
 
+  /**
+   * Number of consecutive stage attempts allowed before a stage is aborted.
+   */
+  private[scheduler] val maxConsecutiveStageAttempts =
+    sc.getConf.getInt("spark.stage.maxConsecutiveAttempts",
+      DAGScheduler.DEFAULT_MAX_CONSECUTIVE_STAGE_ATTEMPTS)
+
   private val messageScheduler =
     ThreadUtils.newDaemonSingleThreadScheduledExecutor("dag-scheduler-message")
 
@@ -1255,14 +1262,21 @@ class DAGScheduler(
               s"longer running")
           }
 
-          if (disallowStageRetryForTest) {
-            abortStage(failedStage, "Fetch failure will not retry stage due to testing config",
-              None)
-          } else if (failedStage.failedOnFetchAndShouldAbort(task.stageAttemptId)) {
-            abortStage(failedStage, s"$failedStage (${failedStage.name}) " +
-              s"has failed the maximum allowable number of " +
-              s"times: ${Stage.MAX_CONSECUTIVE_FETCH_FAILURES}. " +
-              s"Most recent failure reason: ${failureMessage}", None)
+          failedStage.fetchFailedAttemptIds.add(task.stageAttemptId)
+          val shouldAbortStage =
+            failedStage.fetchFailedAttemptIds.size >= maxConsecutiveStageAttempts ||
+            disallowStageRetryForTest
+
+          if (shouldAbortStage) {
+            val abortMessage = if (disallowStageRetryForTest) {
+              "Fetch failure will not retry stage due to testing config"
+            } else {
+              s"""$failedStage (${failedStage.name})
+                 |has failed the maximum allowable number of
+                 |times: $maxConsecutiveStageAttempts.
+                 |Most recent failure reason: $failureMessage""".stripMargin.replaceAll("\n", " ")
+            }
+            abortStage(failedStage, abortMessage, None)
           } else {
             if (failedStages.isEmpty) {
               // Don't schedule an event to resubmit failed stages if failed isn't empty, because
@@ -1674,4 +1688,7 @@ private[spark] object DAGScheduler {
   // this is a simplistic way to avoid resubmitting tasks in the non-fetchable map stage one by one
   // as more failure events come in
   val RESUBMIT_TIMEOUT = 200
+
+  // Number of consecutive stage attempts allowed before a stage is aborted
+  val DEFAULT_MAX_CONSECUTIVE_STAGE_ATTEMPTS = 4
 }
