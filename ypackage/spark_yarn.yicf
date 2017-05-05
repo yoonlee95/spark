@@ -456,7 +456,7 @@ file 444 - - share/spark-$(VERSION)/lib/metrics-jvm-3.1.2.jar ../assembly/target
 file 444 - - share/spark-$(VERSION)/lib/minlog-1.3.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/minlog-1.3.0.jar
 file 444 - - share/spark-$(VERSION)/lib/mx4j-3.0.2.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/mx4j-3.0.2.jar
 file 444 - - share/spark-$(VERSION)/lib/netty-3.8.0.Final.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/netty-3.8.0.Final.jar
-file 444 - - share/spark-$(VERSION)/lib/netty-all-4.0.42.Final.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/netty-all-4.0.42.Final.jar
+file 444 - - share/spark-$(VERSION)/lib/netty-all-4.0.43.Final.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/netty-all-4.0.43.Final.jar
 file 444 - - share/spark-$(VERSION)/lib/objenesis-2.1.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/objenesis-2.1.jar
 file 444 - - share/spark-$(VERSION)/lib/opencsv-2.3.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/opencsv-2.3.jar
 file 444 - - share/spark-$(VERSION)/lib/org.osgi.core-4.1.0.jar ../assembly/target/scala-$(SCALA_VERSION)/jars/org.osgi.core-4.1.0.jar
