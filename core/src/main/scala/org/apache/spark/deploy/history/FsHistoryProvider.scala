@@ -248,7 +248,8 @@ private[history] class FsHistoryProvider(conf: SparkConf, clock: Clock)
             val conf = this.conf.clone()
             val appSecManager = new SecurityManager(conf)
             SparkUI.createHistoryUI(conf, replayBus, appSecManager, appInfo.name,
-              HistoryServer.getAttemptURI(appId, attempt.attemptId), attempt.startTime)
+              HistoryServer.getAttemptURI(appId, attempt.attemptId),
+              attempt.startTime)
             // Do not call ui.bind() to avoid creating a new server for each application
           }
 
@@ -257,7 +258,10 @@ private[history] class FsHistoryProvider(conf: SparkConf, clock: Clock)
           val appListener = replay(fileStatus, isApplicationCompleted(fileStatus), replayBus)
 
           if (appListener.appId.isDefined) {
+
             ui.getSecurityManager.setAcls(HISTORY_UI_ACLS_ENABLE)
+            ui.appSparkVersion = appListener.appSparkVersion.getOrElse("")
+
             // make sure to set admin acls before view acls so they are properly picked up
             val adminAcls = HISTORY_UI_ADMIN_ACLS + "," + appListener.adminAcls.getOrElse("")
             ui.getSecurityManager.setAdminAcls(adminAcls)
@@ -450,7 +454,8 @@ private[history] class FsHistoryProvider(conf: SparkConf, clock: Clock)
     val newAttempts = try {
       val eventsFilter: ReplayEventsFilter = { eventString =>
         eventString.startsWith(APPL_START_EVENT_PREFIX) ||
-          eventString.startsWith(APPL_END_EVENT_PREFIX)
+          eventString.startsWith(APPL_END_EVENT_PREFIX) ||
+          eventString.startsWith(LOG_START_EVENT_PREFIX)
       }
 
       val logPath = fileStatus.getPath()
@@ -476,7 +481,8 @@ private[history] class FsHistoryProvider(conf: SparkConf, clock: Clock)
           lastUpdated,
           appListener.sparkUser.getOrElse(NOT_STARTED),
           appCompleted,
-          fileStatus.getLen()
+          fileStatus.getLen(),
+          appListener.appSparkVersion.getOrElse("")
         )
         fileToAppInfo(logPath) = attemptInfo
         logDebug(s"Application log ${attemptInfo.logPath} loaded successfully: $attemptInfo")
@@ -742,6 +748,8 @@ private[history] object FsHistoryProvider {
   private val APPL_START_EVENT_PREFIX = "{\"Event\":\"SparkListenerApplicationStart\""
 
   private val APPL_END_EVENT_PREFIX = "{\"Event\":\"SparkListenerApplicationEnd\""
+
+  private val LOG_START_EVENT_PREFIX = "{\"Event\":\"SparkListenerLogStart\""
 }
 
 /**
@@ -769,9 +777,10 @@ private class FsApplicationAttemptInfo(
     lastUpdated: Long,
     sparkUser: String,
     completed: Boolean,
-    val fileSize: Long)
+    val fileSize: Long,
+    appSparkVersion: String)
   extends ApplicationAttemptInfo(
-      attemptId, startTime, endTime, lastUpdated, sparkUser, completed) {
+      attemptId, startTime, endTime, lastUpdated, sparkUser, completed, appSparkVersion) {
 
   /** extend the superclass string value with the extra attributes of this class */
   override def toString: String = {

@@ -60,6 +60,8 @@ private[spark] class SparkUI private (
 
   var appId: String = _
 
+  var appSparkVersion = org.apache.spark.SPARK_VERSION
+  
   /** Initialize all components of the server. */
   def initialize() {
     val jobsTab = new JobsTab(this)
@@ -123,7 +125,8 @@ private[spark] class SparkUI private (
         duration = 0,
         lastUpdated = new Date(startTime),
         sparkUser = "",
-        completed = false
+        completed = false,
+        appSparkVersion = appSparkVersion
       ))
     ))
   }
@@ -138,6 +141,7 @@ private[spark] abstract class SparkUITab(parent: SparkUI, prefix: String)
 
   def appName: String = parent.getAppName
 
+  def appSparkVersion: String = parent.appSparkVersion
 }
 
 private[spark] object SparkUI {
