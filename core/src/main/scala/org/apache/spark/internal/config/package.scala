@@ -39,7 +39,7 @@ package object config {
 
   private[spark] val DRIVER_MEMORY = ConfigBuilder("spark.driver.memory")
     .bytesConf(ByteUnit.MiB)
-    .createWithDefaultString("1g")
+    .createWithDefaultString("3g")
 
   private[spark] val EXECUTOR_CLASS_PATH =
     ConfigBuilder(SparkLauncher.EXECUTOR_EXTRA_CLASSPATH).stringConf.createOptional
