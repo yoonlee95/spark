@@ -73,6 +73,9 @@ private[spark] class Client(
 
   private val isClusterMode = sparkConf.get("spark.submit.deployMode", "client") == "cluster"
 
+  // Default java opts for driver
+  private val DEFAULT_DRIVER_JAVA_OPTS = "-XX:+PrintGCDetails -XX:+PrintGCDateStamps"
+
   // AM related configurations
   private val amMemory = if (isClusterMode) {
     sparkConf.get(DRIVER_MEMORY).toInt
@@ -959,7 +962,9 @@ private[spark] class Client(
         "-Djava.net.preferIPv4Stack=true")
       javaOpts ++= Utils.splitCommandString(adminOpts).map(YarnSparkHadoopUtil.escapeForShell)
 
-      val driverOpts = sparkConf.get(DRIVER_JAVA_OPTIONS).orElse(sys.env.get("SPARK_JAVA_OPTS"))
+      val driverOpts = sparkConf.get(DRIVER_JAVA_OPTIONS)
+                         .orElse(sys.env.get("SPARK_JAVA_OPTS"))
+                         .orElse(Some(DEFAULT_DRIVER_JAVA_OPTS))
       driverOpts.foreach { opts =>
         javaOpts ++= Utils.splitCommandString(opts).map(YarnSparkHadoopUtil.escapeForShell)
       }

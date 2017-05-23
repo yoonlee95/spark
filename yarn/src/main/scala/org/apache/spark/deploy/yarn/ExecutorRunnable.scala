@@ -59,6 +59,9 @@ private[yarn] class ExecutorRunnable(
   var rpc: YarnRPC = YarnRPC.create(conf)
   var nmClient: NMClient = _
 
+  // Default executor java opts for driver
+  private val DEFAULT_EXECUTOR_JAVA_OPTS = "-XX:+PrintGCDetails -XX:+PrintGCDateStamps"
+
   def run(): Unit = {
     logDebug("Starting Executor Container")
     nmClient = NMClient.createNMClient()
@@ -146,7 +149,7 @@ private[yarn] class ExecutorRunnable(
     javaOpts ++= Utils.splitCommandString(adminOpts).map(YarnSparkHadoopUtil.escapeForShell)
 
     // Set extra Java options for the executor, if defined
-    sparkConf.get(EXECUTOR_JAVA_OPTIONS).foreach { opts =>
+    sparkConf.get(EXECUTOR_JAVA_OPTIONS).orElse(Some(DEFAULT_EXECUTOR_JAVA_OPTS)).foreach { opts =>
       javaOpts ++= Utils.splitCommandString(opts).map(YarnSparkHadoopUtil.escapeForShell)
     }
     sys.env.get("SPARK_JAVA_OPTS").foreach { opts =>
