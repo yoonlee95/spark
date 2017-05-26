@@ -1265,7 +1265,7 @@ class DAGScheduler(
           failedStage.fetchFailedAttemptIds.add(task.stageAttemptId)
           val shouldAbortStage =
             failedStage.fetchFailedAttemptIds.size >= maxConsecutiveStageAttempts ||
-            disallowStageRetryForTest
+              disallowStageRetryForTest
 
           if (shouldAbortStage) {
             val abortMessage = if (disallowStageRetryForTest) {
@@ -1297,9 +1297,35 @@ class DAGScheduler(
             mapOutputTracker.unregisterMapOutput(shuffleId, mapId, bmAddress)
           }
 
-          // TODO: mark the executor as failed only if there were lots of fetch failures on it
           if (bmAddress != null) {
-            handleExecutorLost(bmAddress.executorId, filesLost = true, Some(task.epoch))
+            if (env.blockManager.externalShuffleServiceEnabled) {
+
+              if ((!failedEpoch.contains(bmAddress.executorId) ||
+                failedEpoch(bmAddress.executorId) < task.epoch)) {
+                // mark all the executors on that host as failed so we don't do this again
+                // if another task failed for same executor
+                val execsOnHost = mapStage.getExecutorsWithOutputsOnHost(bmAddress.host)
+                logDebug("executors on host is: " + execsOnHost + " epoch: " + task.epoch)
+                for (exec <- execsOnHost) {
+                  failedEpoch(exec) = task.epoch
+                  logInfo("Removing outputs for executor: %s (epoch %d)".format(exec, task.epoch))
+                  blockManagerMaster.removeExecutor(exec)
+                  // only mark this mapStage output on the executor as bad.. could do all stages
+                  // but would cost more
+                  mapStage.removeOutputsOnExecutor(exec)
+                }
+                mapOutputTracker.registerMapOutputs(
+                  shuffleId,
+                  mapStage.outputLocInMapOutputTrackerFormat(),
+                  changeEpoch = true)
+                if (shuffleIdToMapStage.isEmpty) {
+                  mapOutputTracker.incrementEpoch()
+                }
+                clearCacheLocs()
+              }
+            } else {
+              handleExecutorLost(bmAddress.executorId, filesLost = true, Some(task.epoch))
+            }
           }
         }
 
@@ -1358,7 +1384,7 @@ class DAGScheduler(
       }
     } else {
       logDebug("Additional executor lost message for " + execId +
-               "(epoch " + currentEpoch + ")")
+        "(epoch " + currentEpoch + ")")
     }
   }
 
@@ -1645,11 +1671,11 @@ private[scheduler] class DAGSchedulerEventProcessLoop(dagScheduler: DAGScheduler
       dagScheduler.handleExecutorAdded(execId, host)
 
     case ExecutorLost(execId, reason) =>
-      val filesLost = reason match {
+      val workerLost = reason match {
         case SlaveLost(_, true) => true
         case _ => false
       }
-      dagScheduler.handleExecutorLost(execId, filesLost)
+      dagScheduler.handleExecutorLost(execId, workerLost)
 
     case BeginEvent(task, taskInfo) =>
       dagScheduler.handleBeginEvent(task, taskInfo)

@@ -41,6 +41,7 @@ class BlacklistTrackerSuite extends SparkFunSuite with BeforeAndAfterEach with M
   override def beforeEach(): Unit = {
     conf = new SparkConf().setAppName("test").setMaster("local")
       .set(config.BLACKLIST_ENABLED.key, "true")
+    conf.set("spark.authenticate", "false")
     scheduler = mockTaskSchedWithConf(conf)
 
     clock.setTime(0)
@@ -527,6 +528,39 @@ class BlacklistTrackerSuite extends SparkFunSuite with BeforeAndAfterEach with M
     blacklist.updateBlacklistForSuccessfulTaskSet(0, 0, taskSetBlacklist3.execToFailures)
 
     verify(allocationClientMock).killExecutors(Seq("2"), true, true)
+    verify(allocationClientMock).killExecutorsOnHost("hostA")
+  }
+
+  test("fetch failure blacklisting kills executors, configured by BLACKLIST_KILL_ENABLED") {
+    val allocationClientMock = mock[ExecutorAllocationClient]
+    when(allocationClientMock.killExecutorsOnHost("hostA")).thenAnswer(new Answer[Boolean] {
+      // To avoid a race between blacklisting and killing, it is important that the nodeBlacklist
+      // is updated before we ask the executor allocation client to kill all the executors
+      // on a particular host.
+      override def answer(invocation: InvocationOnMock): Boolean = {
+        if (blacklist.nodeBlacklist.contains("hostA") == false) {
+          throw new IllegalStateException("hostA should be on the blacklist")
+        }
+        true
+      }
+    })
+
+    conf.set(config.BLACKLIST_FETCH_FAILURE_ENABLED, true)
+    blacklist = new BlacklistTracker(listenerBusMock, conf, Some(allocationClientMock), clock)
+
+    // Disable auto-kill. Blacklist an executor and make sure killExecutors is not called.
+    conf.set(config.BLACKLIST_KILL_ENABLED, false)
+    blacklist.updateBlacklistForFetchFailure("hostA")
+
+    verify(allocationClientMock, never).killExecutorsOnHost(any())
+
+    // Enable auto-kill. 
+    conf.set(config.BLACKLIST_KILL_ENABLED, true)
+    // Enable external shuffle service to see if all the executors on this node will be killed.
+    conf.set("spark.shuffle.service.enabled", "true")
+    blacklist = new BlacklistTracker(listenerBusMock, conf, Some(allocationClientMock), clock)
+    blacklist.updateBlacklistForFetchFailure("hostA")
+
     verify(allocationClientMock).killExecutorsOnHost("hostA")
   }
 }

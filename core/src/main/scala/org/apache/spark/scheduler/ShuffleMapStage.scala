@@ -17,8 +17,10 @@
 
 package org.apache.spark.scheduler
 
-import org.apache.spark.ShuffleDependency
+import scala.collection.mutable.HashSet
+
 import org.apache.spark.rdd.RDD
+import org.apache.spark.ShuffleDependency
 import org.apache.spark.storage.BlockManagerId
 import org.apache.spark.util.CallSite
 
@@ -117,6 +119,18 @@ private[spark] class ShuffleMapStage(
    */
   def outputLocInMapOutputTrackerFormat(): Array[MapStatus] = {
     outputLocs.map(_.headOption.orNull)
+  }
+
+  /**
+    * Returns a list of executorids that have outputs on the host passed in.
+    */
+  def getExecutorsWithOutputsOnHost(host: String): List[String] = {
+    val executors = new HashSet[String]
+    for (partition <- 0 until numPartitions) {
+      val prevList = outputLocs(partition)
+      executors ++= prevList.filter(_.location.host == host).map((s) => s.location.executorId)
+    }
+    executors.toList
   }
 
   /**
