@@ -266,7 +266,13 @@ class SparkSubmitCommandBuilder extends AbstractCommandBuilder {
       String memory = firstNonEmpty(tsMemory, config.get(SparkLauncher.DRIVER_MEMORY),
         System.getenv("SPARK_DRIVER_MEMORY"), System.getenv("SPARK_MEM"), DEFAULT_MEM);
       cmd.add("-Xmx" + memory);
+      // special case for Yahoo hive version built using old datanucleus jars
+      String driverExtraJavaOptionsHive = config.get("spark.driver.extraJavaOptions.hive");
+      if (driverExtraJavaOptionsHive == null) {
+        driverExtraJavaOptionsHive = " -Xverify:none";
+      }
       addOptionString(cmd, driverExtraJavaOptions);
+      addOptionString(cmd, driverExtraJavaOptionsHive);
       mergeEnvPathList(env, getLibPathEnvName(),
         config.get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));
     }

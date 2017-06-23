@@ -962,6 +962,11 @@ private[spark] class Client(
         "-Djava.net.preferIPv4Stack=true")
       javaOpts ++= Utils.splitCommandString(adminOpts).map(YarnSparkHadoopUtil.escapeForShell)
 
+      // special case for Yahoo hive version built using old datanucleus jars
+      val hiveAdminOpts = sparkConf.get("spark.admin.driver.extraJavaOptions.hive",
+        "-Xverify:none")
+      javaOpts ++= Utils.splitCommandString(hiveAdminOpts).map(YarnSparkHadoopUtil.escapeForShell)
+
       val driverOpts = sparkConf.get(DRIVER_JAVA_OPTIONS)
                          .orElse(sys.env.get("SPARK_JAVA_OPTS"))
                          .orElse(Some(DEFAULT_DRIVER_JAVA_OPTS))
