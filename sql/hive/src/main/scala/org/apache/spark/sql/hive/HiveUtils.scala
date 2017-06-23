@@ -378,6 +378,7 @@ private[spark] object HiveUtils extends Logging {
       s"jdbc:derby:${withInMemoryMode};databaseName=${localMetastore.getAbsolutePath};create=true")
     propMap.put("datanucleus.rdbms.datastoreAdapterClassName",
       "org.datanucleus.store.rdbms.adapter.DerbyAdapter")
+    propMap.put("datanucleus.connectionPoolingType", "BoneCP")
 
     // SPARK-11783: When "hive.metastore.uris" is set, the metastore connection mode will be
     // remote (https://cwiki.apache.org/confluence/display/Hive/AdminManual+MetastoreAdmin
