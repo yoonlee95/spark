@@ -233,9 +233,9 @@ object ExternalSizeEstimator extends Logging {
 
   // Estimate the size of arrays larger than ARRAY_SIZE_FOR_SAMPLING by sampling.
   private val ARRAY_SIZE_FOR_SAMPLING = sparkConf.getInt(
-    "spark.externalSizeEstimate.arraySizeForSampling", 524289)
+    "spark.externalSizeEstimate.arraySizeForSampling", 400)
   // should be lower than ARRAY_SIZE_FOR_SAMPLING
-  private val ARRAY_SAMPLE_SIZE = sparkConf.getInt("spark.externalSizeEstimate.arraySampleSize", 131072)
+  private val ARRAY_SAMPLE_SIZE = sparkConf.getInt("spark.externalSizeEstimate.arraySampleSize", 100)
 
   private def visitArray(array: AnyRef, arrayClass: Class[_], state: SearchState) {
     val length = ScalaRunTime.array_length(array)
