@@ -592,16 +592,12 @@ class FsHistoryProviderSuite extends SparkFunSuite with BeforeAndAfter with Matc
     val cstream = codec.map(_.compressedOutputStream(fstream)).getOrElse(fstream)
     val bstream = new BufferedOutputStream(cstream)
     if (isNewFormat) {
-<<<<<<< HEAD
-      EventLoggingListener.initEventLog(new FileOutputStream(file))
-=======
       val newFormatStream = new FileOutputStream(file)
       Utils.tryWithSafeFinally {
         EventLoggingListener.initEventLog(newFormatStream, false, null)
       } {
         newFormatStream.close()
       }
->>>>>>> 181261a... [SPARK-20355] Add per application spark version on the history server headerpage
     }
     val writer = new OutputStreamWriter(bstream, StandardCharsets.UTF_8)
     Utils.tryWithSafeFinally {
