@@ -150,7 +150,7 @@ class NewHadoopRDD[K, V](
       private val getBytesReadCallback: Option[() => Long] =
         split.serializableHadoopSplit.value match {
           case _: FileSplit | _: CombineFileSplit =>
-            SparkHadoopUtil.get.getFSBytesReadOnThreadCallback()
+            Some(SparkHadoopUtil.get.getFSBytesReadOnThreadCallback())
           case _ => None
         }
 
