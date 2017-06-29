@@ -11,8 +11,14 @@ color=$(echo $cluster | cut -d . -f 2)
 spark_kerberos_keytab="/etc/grid-keytabs/${grid}${color}-jt1.prod.service.keytab"
 spark_kerberos_principal="mapred/${grid}${color}-jt1.${color}.ygrid.yahoo.com@YGRID.YAHOO.COM"
 
-spark_history_ssl_keystore="/etc/ssl/certs/prod/_${color}_ygrid_yahoo_com/mapred.jks"
-spark_history_ssl_truststore="/etc/ssl/certs/prod/_${color}_ygrid_yahoo_com/mapred.jks"
+if [ -z ${color} ]
+ then
+   spark_history_ssl_keystore="/etc/ssl/certs/prod/_open_ygrid_yahoo_com/mapred.jks"
+   spark_history_ssl_truststore="/etc/ssl/certs/prod/_open_ygrid_yahoo_com/mapred.jks"
+else
+  spark_history_ssl_keystore="/etc/ssl/certs/prod/_${color}_ygrid_yahoo_com/mapred.jks"
+  spark_history_ssl_truststore="/etc/ssl/certs/prod/_${color}_ygrid_yahoo_com/mapred.jks"
+fi
 
 # if it doesn't exist assume QE setup
 if [ ! -e $spark_kerberos_keytab ] 
