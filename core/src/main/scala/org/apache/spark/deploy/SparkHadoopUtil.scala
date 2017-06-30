@@ -24,6 +24,7 @@ import java.text.DateFormat
 import java.util.{Arrays, Comparator, Date, Locale}
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.util.control.NonFatal
 
 import com.google.common.primitives.Longs
@@ -148,21 +149,29 @@ class SparkHadoopUtil extends Logging {
   /**
    * Returns a function that can be called to find Hadoop FileSystem bytes read. If
    * getFSBytesReadOnThreadCallback is called from thread r at time t, the returned callback will
-   * return the bytes read on r since t.  Reflection is required because thread-level FileSystem
-   * statistics are only available as of Hadoop 2.5 (see HADOOP-10688).
-   * Returns None if the required method can't be found.
+   * return the bytes read on r since t.
    */
-  private[spark] def getFSBytesReadOnThreadCallback(): Option[() => Long] = {
-    try {
-      val threadStats = getFileSystemThreadStatistics()
-      val getBytesReadMethod = getFileSystemThreadStatisticsMethod("getBytesRead")
-      val f = () => threadStats.map(getBytesReadMethod.invoke(_).asInstanceOf[Long]).sum
-      val baselineBytesRead = f()
-      Some(() => f() - baselineBytesRead)
-    } catch {
-      case e @ (_: NoSuchMethodException | _: ClassNotFoundException) =>
-        logDebug("Couldn't find method for retrieving thread-level FileSystem input data", e)
-        None
+  private[spark] def getFSBytesReadOnThreadCallback(): () => Long = {
+    val f = () => FileSystem.getAllStatistics.asScala.map(_.getThreadStatistics.getBytesRead).sum
+    val baseline = (Thread.currentThread().getId, f())
+
+    /**
+     * This function may be called in both spawned child threads and parent task thread (in
+     * PythonRDD), and Hadoop FileSystem uses thread local variables to track the statistics.
+     * So we need a map to track the bytes read from the child threads and parent thread,
+     * summing them together to get the bytes read of this task.
+     */
+    new Function0[Long] {
+      private val bytesReadMap = new mutable.HashMap[Long, Long]()
+
+      override def apply(): Long = {
+        bytesReadMap.synchronized {
+          bytesReadMap.put(Thread.currentThread().getId, f())
+          bytesReadMap.map { case (k, v) =>
+            v - (if (k == baseline._1) baseline._2 else 0)
+          }.sum
+        }
+      }
     }
   }
 

@@ -150,7 +150,7 @@ class NewHadoopRDD[K, V](
       private val getBytesReadCallback: Option[() => Long] =
         split.serializableHadoopSplit.value match {
           case _: FileSplit | _: CombineFileSplit =>
-            SparkHadoopUtil.get.getFSBytesReadOnThreadCallback()
+            Some(SparkHadoopUtil.get.getFSBytesReadOnThreadCallback())
           case _ => None
         }
 
@@ -189,7 +189,13 @@ class NewHadoopRDD[K, V](
         }
 
       // Register an on-task-completion callback to close the input stream.
-      context.addTaskCompletionListener(context => close())
+      context.addTaskCompletionListener { context =>
+        // Update the bytesRead before closing is to make sure lingering bytesRead statistics in
+        // this thread get correctly added.
+        updateBytesRead()
+        close()
+      }
+
       private var havePair = false
       private var recordsSinceMetricsUpdate = 0
 
