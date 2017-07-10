@@ -31,7 +31,7 @@ fi
 
 if [ -z ${spark_history_gc_log_dir} ]
 then
-  spark_gc_log_file_formatted="-Xloggc:/home/gs/var/log/mapred/gc-sparkhistoryserver.log-`date +'%Y%m%d%H%M'`"
+  spark_gc_log_file_formatted="-Xloggc:/home/gs/var/log/mapred/gc-sparkhistoryserver.log-\`date +'%Y%m%d%H%M'\`"
 fi
 spark_all_history_gc_opts="${spark_history_gc_opts} ${spark_gc_log_file_formatted}"
 
