@@ -258,7 +258,8 @@ object SizeEstimator extends Logging {
           arrayIndex += 1
         }
       } else {
-        logDebug("Using array size sample because array length > " + ARRAY_SIZE_FOR_SAMPLING + " length is: " + length)
+        logDebug("Using array size sample because array length > "
+         + ARRAY_SIZE_FOR_SAMPLING + " length is: " + length)
         // Estimate the size of a large array by sampling elements without replacement.
         // To exclude the shared objects that the array elements may link, sample twice
         // and use the min one to calculate array size.

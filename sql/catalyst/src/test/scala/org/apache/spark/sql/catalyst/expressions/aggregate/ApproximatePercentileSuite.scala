@@ -17,7 +17,7 @@
 
 package org.apache.spark.sql.catalyst.expressions.aggregate
 
-import org.apache.spark.SparkFunSuite
+import org.apache.spark.{SparkConf, SparkContext, SparkEnv, SparkFunSuite}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.analysis.{SimpleAnalyzer, UnresolvedAttribute}
 import org.apache.spark.sql.catalyst.analysis.TypeCheckResult.TypeCheckFailure
@@ -77,6 +77,10 @@ class ApproximatePercentileSuite extends SparkFunSuite {
   }
 
   test("class PercentileDigest, makes sure the memory foot print is bounded") {
+    // SparkContext has to be set for SparkEnv or error would occur in SizeEstimator
+    val conf = new SparkConf
+    new SparkContext("local", "test", conf)
+    
     val relativeError = 0.01
     val memoryFootPrintUpperBound = {
       val headBufferSize =

@@ -17,11 +17,13 @@
 
 package org.apache.spark.util
 
+
 import scala.collection.mutable.ArrayBuffer
 
 import org.scalatest.{BeforeAndAfterEach, PrivateMethodTester}
 
-import org.apache.spark.SparkFunSuite
+import org.apache.spark.{SparkConf, SparkContext, SparkFunSuite}
+
 
 class DummyClass1 {}
 
@@ -68,9 +70,19 @@ class DummyClass8 extends KnownSizeEstimation {
 
 class SizeEstimatorSuite
   extends SparkFunSuite
-  with BeforeAndAfterEach
-  with PrivateMethodTester
-  with ResetSystemProperties {
+    with BeforeAndAfterEach
+    with PrivateMethodTester
+    with ResetSystemProperties {
+
+  private var sc: SparkContext = null
+
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    // SparkContext has to be set for SparkEnv or error would occur in SizeEstimator
+    val conf = new SparkConf
+    sc = new SparkContext("local", "test", conf)
+  }
 
   override def beforeEach() {
     // Set the arch to 64-bit and compressedOops to true to get a deterministic test-case
@@ -79,9 +91,16 @@ class SizeEstimatorSuite
     System.setProperty("spark.test.useCompressedOops", "true")
   }
 
-  override def afterEach(): Unit = {
-    super.afterEach()
+  override def afterAll(): Unit = {
+    try {
+      if (sc != null) {
+        sc.stop()
+      }
+    } finally {
+      super.afterAll()
+    }
   }
+
 
   test("simple classes") {
     assertResult(16)(SizeEstimator.estimate(new DummyClass1))
