@@ -17,13 +17,11 @@
 
 package org.apache.spark.util
 
-
 import scala.collection.mutable.ArrayBuffer
 
 import org.scalatest.{BeforeAndAfterEach, PrivateMethodTester}
 
 import org.apache.spark.{SparkConf, SparkContext, SparkFunSuite}
-
 
 class DummyClass1 {}
 
@@ -75,7 +73,6 @@ class SizeEstimatorSuite
     with ResetSystemProperties {
 
   private var sc: SparkContext = null
-
 
   override def beforeAll(): Unit = {
     super.beforeAll()
