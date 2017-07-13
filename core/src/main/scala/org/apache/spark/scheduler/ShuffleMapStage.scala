@@ -122,8 +122,8 @@ private[spark] class ShuffleMapStage(
   }
 
   /**
-    * Returns a list of executorids that have outputs on the host passed in.
-    */
+   * Returns a list of executorids that have outputs on the host passed in.
+   */
   def getExecutorsWithOutputsOnHost(host: String): List[String] = {
     val executors = new HashSet[String]
     for (partition <- 0 until numPartitions) {

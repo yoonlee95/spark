@@ -616,7 +616,8 @@ object SparkSubmit {
       sysProps.getOrElseUpdate(k, v)
     }
 
-    // In cluster mode, set the spark.hadoop.hive.querylog.location to ${java.io.tmpdir}/hivelogs by default
+    // In cluster mode, set the spark.hadoop.hive.querylog.location
+    // to ${java.io.tmpdir}/hivelogs by default
     if (deployMode == CLUSTER && !sysProps.contains("spark.hadoop.hive.querylog.location")) {
       sysProps("spark.hadoop.hive.querylog.location") = "${java.io.tmpdir}/hivelogs"
     }

@@ -2055,6 +2055,10 @@
               <spark.ui.showConsoleProgress>false</spark.ui.showConsoleProgress>
               <spark.unsafe.exceptionOnMemoryLeak>true</spark.unsafe.exceptionOnMemoryLeak>
               <spark.memory.debugFill>true</spark.memory.debugFill>
+              <spark.authenticate>false</spark.authenticate>
+              <spark.ui.acls.enable>false</spark.ui.acls.enable>
+              <spark.dynamicAllocation.enabled>false</spark.dynamicAllocation.enabled>
+              <spark.shuffle.service.enabled>false</spark.shuffle.service.enabled>
               <!-- Needed by sql/hive tests. -->
               <test.src.tables>src</test.src.tables>
             </systemProperties>
@@ -2103,6 +2107,10 @@
               <spark.ui.enabled>false</spark.ui.enabled>
               <spark.ui.showConsoleProgress>false</spark.ui.showConsoleProgress>
               <spark.unsafe.exceptionOnMemoryLeak>true</spark.unsafe.exceptionOnMemoryLeak>
+              <spark.authenticate>false</spark.authenticate>
+              <spark.ui.acls.enable>false</spark.ui.acls.enable>
+              <spark.dynamicAllocation.enabled>false</spark.dynamicAllocation.enabled>
+              <spark.shuffle.service.enabled>false</spark.shuffle.service.enabled>
               <!-- Needed by sql/hive tests. -->
               <test.src.tables>__not_used__</test.src.tables>
             </systemProperties>

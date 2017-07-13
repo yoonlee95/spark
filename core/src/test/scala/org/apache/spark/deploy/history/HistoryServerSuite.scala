@@ -551,9 +551,12 @@ class HistoryServerSuite extends SparkFunSuite with BeforeAndAfter with Matchers
   }
 
   test("ui and api authorization checks") {
+    // appId used to be "app-20161115172038-0000" which invoke a null attempt Id problem
+    // owner and admin should be set correctly according to the config of Security Manager
+    // (see user name for acls and acls admin in SecurityManager.scala)
     val appId = "local-1430917381535"
     val owner = "irashid"
-    val admin = "root"
+    val admin = ""
     val other = "alice"
 
     stop()
