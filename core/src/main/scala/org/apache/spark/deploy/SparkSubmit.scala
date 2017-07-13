@@ -133,8 +133,47 @@ object SparkSubmit {
    * Kill an existing submission using the REST protocol. Standalone and Mesos cluster mode only.
    */
   private def kill(args: SparkSubmitArguments): Unit = {
-    new RestSubmissionClient(args.master)
-      .killSubmission(args.submissionToKill)
+    if (args.master.startsWith("yarn")) {
+      yarnKillSubmission(args)
+    } else {
+      new RestSubmissionClient(args.master)
+        .killSubmission(args.submissionToKill)
+    }
+
+  }
+
+  private def yarnKillSubmission(args: SparkSubmitArguments): Unit = {
+    val (childArgs, _, sysProps, _) = prepareSubmitEnvironment(args)
+    if (childArgs.size > 0) {
+      printErrorAndExit("Only one argument is expected to kill the applicaiton")
+    }
+    for ((key, value) <- sysProps) {
+      System.setProperty(key, value)
+    }
+    val applicationID = ArrayBuffer("--arg", args.submissionToKill).toArray
+    // scalastyle:on println
+
+    var mainClass: Class[_] = null
+    try {
+      mainClass = Utils.classForName("org.apache.spark.deploy.yarn.Client")
+    } catch {
+      case e: ClassNotFoundException =>
+        e.printStackTrace(printStream)
+        System.exit(CLASS_NOT_FOUND_EXIT_STATUS)
+      case e: NoClassDefFoundError =>
+        e.printStackTrace(printStream)
+        System.exit(CLASS_NOT_FOUND_EXIT_STATUS)
+    }
+    val mainMethod = mainClass.getMethod("yarnKillSubmission", new Array[String](0).getClass)
+    if (!Modifier.isStatic(mainMethod.getModifiers)) {
+      throw new IllegalStateException("The main method in the given main class must be static")
+    }
+    try {
+      mainMethod.invoke(null, applicationID)
+    } catch {
+      case t: Throwable =>
+        throw t
+    }
   }
 
   /**

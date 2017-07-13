@@ -227,10 +227,11 @@ private[spark] class SecurityManager(
   setViewAcls(defaultAclUsers, sparkConf.get("spark.ui.view.acls", ""))
   setModifyAcls(defaultAclUsers, sparkConf.get("spark.modify.acls", ""))
 
-  setViewAclsGroups(sparkConf.get("spark.ui.view.acls.groups", ""));
-  setModifyAclsGroups(sparkConf.get("spark.modify.acls.groups", ""));
+  setViewAclsGroups(sparkConf.get("spark.ui.view.acls.groups", ""))
+  setModifyAclsGroups(sparkConf.get("spark.modify.acls.groups", ""))
 
-  private val secretKey = generateSecretKey()
+  private var identifier = "sparkSaslUser"
+  private var secretKey = generateSecretKey()
   logInfo("SecurityManager: authentication " + (if (authOn) "enabled" else "disabled") +
     "; ui acls " + (if (aclsOn) "enabled" else "disabled") +
     "; users  with view permissions: " + viewAcls.toString() +
@@ -541,8 +542,23 @@ private[spark] class SecurityManager(
    * For now use a single hardcoded user.
    * @return the SASL user as a String
    */
-  def getSaslUser(): String = "sparkSaslUser"
+  def getSaslUser(): String = identifier
 
+  /**
+    * Set the identifier . Needed when trying to contact YARN AM from client after launch we need
+    * to use the YARN token
+    */
+  def setidentifier(ident: String) {
+    identifier = ident
+  }
+
+  /**
+    * Set the secret key . Needed when trying to contact YARN AM from client after launch we need
+    * to use the YARN token
+    */
+  def setSecretKey(secret: String) {
+    secretKey = secret
+  }
   /**
    * Gets the secret key.
    * @return the secret key as a String if authentication is enabled, otherwise returns null

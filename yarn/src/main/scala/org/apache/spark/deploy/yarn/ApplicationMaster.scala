@@ -17,6 +17,8 @@
 
 package org.apache.spark.deploy.yarn
 
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec;
 import java.io.{File, IOException}
 import java.lang.reflect.InvocationTargetException
 import java.net.{Socket, URI, URL}
@@ -27,6 +29,11 @@ import scala.concurrent.Promise
 import scala.concurrent.duration.Duration
 import scala.util.control.NonFatal
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.base64.Base64;
+import com.google.common.base.Charsets;
+
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.yarn.api._
 import org.apache.hadoop.yarn.api.records._
@@ -36,6 +43,7 @@ import org.apache.hadoop.yarn.util.{ConverterUtils, Records}
 import org.apache.spark._
 import org.apache.spark.deploy.SparkHadoopUtil
 import org.apache.spark.deploy.history.HistoryServer
+import org.apache.spark.deploy.yarn.ApplicationMasterMessages._
 import org.apache.spark.deploy.yarn.config._
 import org.apache.spark.deploy.yarn.security.{AMCredentialRenewer, ConfigurableCredentialManager}
 import org.apache.spark.internal.Logging
@@ -44,6 +52,12 @@ import org.apache.spark.rpc._
 import org.apache.spark.scheduler.cluster.{CoarseGrainedSchedulerBackend, YarnSchedulerBackend}
 import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.util._
+import org.apache.spark.network.{TransportContext, BlockDataManager}
+import org.apache.spark.network.client.TransportClientBootstrap
+import org.apache.spark.network.netty.{SparkTransportConf, NettyBlockRpcServer}
+import org.apache.spark.network.sasl.{SaslClientBootstrap, SaslServerBootstrap}
+import org.apache.spark.network.server.{TransportServer, TransportServerBootstrap}
+import org.apache.spark.serializer.JavaSerializer
 
 /**
  * Common application master functionality for Spark on Yarn.
@@ -88,6 +102,7 @@ private[spark] class ApplicationMaster(
 
   @volatile private var reporterThread: Thread = _
   @volatile private var allocator: YarnAllocator = _
+  @volatile private var clientToAMPort: Int = _
 
   // Lock for controlling the allocator (heartbeat) thread.
   private val allocatorLock = new Object()
@@ -228,7 +243,7 @@ private[spark] class ApplicationMaster(
 
         if (!unregistered) {
           // we only want to unregister if we don't want the RM to retry
-          if (finalStatus == FinalApplicationStatus.SUCCEEDED || isLastAttempt) {
+          if (finalStatus == FinalApplicationStatus.SUCCEEDED ||finalStatus == FinalApplicationStatus.KILLED ||  isLastAttempt) {
             unregister(finalStatus, finalMsg)
             cleanupStagingDir(fs)
           }
@@ -379,7 +394,8 @@ private[spark] class ApplicationMaster(
       uiAddress,
       historyAddress,
       securityMgr,
-      localResources)
+      localResources,
+      clientToAMPort)
 
     allocator.allocateResources()
     reporterThread = launchReporterThread()
@@ -405,6 +421,43 @@ private[spark] class ApplicationMaster(
     driverEndpoint
   }
 
+  /**
+    * Create an [[RpcEndpoint]] that communicates with the client.
+    *
+    * @return A reference to the driver's RPC endpoint.
+    */
+  private def runClientAMEndpoint(
+                                   host: String,
+                                   port: Int,
+                                   isClusterMode: Boolean,
+                                   securityManager: SecurityManager): RpcEndpointRef = {
+    // TODO do we need to create new rpc env?
+    val serversparkConf = new SparkConf()
+    serversparkConf.set("ClientAMToken","true")
+
+    val amRpcEnv =
+      RpcEnv.create(ApplicationMaster.SYSTEM_NAME, Utils.localHostName(), port, serversparkConf,
+        securityManager)
+
+    val clientAMEndpoint =
+      amRpcEnv.setupEndpoint(ApplicationMaster.ENDPOINT_NAME, new ClientToAMEndpoint(amRpcEnv,
+        sparkConf))
+    clientAMEndpoint
+  }
+
+  /** RpcEndpoint class for ClientToAM */
+  private[spark] class ClientToAMEndpoint(override val rpcEnv: RpcEnv, conf: SparkConf)
+    extends RpcEndpoint with Logging {
+
+    override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
+
+      case KillApplicaiton =>
+        finish(FinalApplicationStatus.KILLED, ApplicationMaster.EXIT_KILLED)
+        context.reply(true)
+      case UploadCredential => context.reply(false)
+    }
+  }
+
   private def runDriver(securityMgr: SecurityManager): Unit = {
     addAmIpFilter()
     userClassThread = startUserApplication()
@@ -422,8 +475,12 @@ private[spark] class ApplicationMaster(
           sc.getConf.get("spark.driver.host"),
           sc.getConf.get("spark.driver.port"),
           isClusterMode = true)
+
+        clientToAMPort = sparkConf.getInt("spark.yarn.clientToAM.port", 51291)
         registerAM(sc.getConf, rpcEnv, driverRef, sc.ui.map(_.appUIAddress).getOrElse(""),
           securityMgr)
+
+        createClientToAMRpcEndpoint()
       } else {
         // Sanity check; should never happen in normal operation, since sc should only be null
         // if the user app did not create a SparkContext.
@@ -441,6 +498,16 @@ private[spark] class ApplicationMaster(
           ApplicationMaster.EXIT_SC_NOT_INITED,
           "Timed out waiting for SparkContext.")
     }
+  }
+
+  private def createClientToAMRpcEndpoint(): Unit = {
+    // Obtain RM Masterkey and set the securityManagers SecretKey to it
+    val clientToAMSecurityManager = new SecurityManager(sparkConf)
+    var masterkeyString = Base64.encode(Unpooled.wrappedBuffer(client.getMasterKey)).toString(Charsets.UTF_8);
+    clientToAMSecurityManager.setSecretKey(masterkeyString);
+
+    runClientAMEndpoint(Utils.localHostName(), clientToAMPort, isClusterMode = true,
+      clientToAMSecurityManager)
   }
 
   private def runExecutorLauncher(securityMgr: SecurityManager): Unit = {
@@ -751,7 +818,20 @@ private[spark] class ApplicationMaster(
 
 }
 
+sealed trait ApplicationMasterMessage extends Serializable
+
+private[spark] object ApplicationMasterMessages {
+
+  case class KillApplicaiton() extends ApplicationMasterMessage
+
+  case class UploadCredential() extends ApplicationMasterMessage
+
+}
+
 object ApplicationMaster extends Logging {
+
+  val SYSTEM_NAME = "sparkYarnAM"
+  val ENDPOINT_NAME = "clientToAM"
 
   // exit codes for different causes, no reason behind the values
   private val EXIT_SUCCESS = 0
@@ -762,6 +842,7 @@ object ApplicationMaster extends Logging {
   private val EXIT_SECURITY = 14
   private val EXIT_EXCEPTION_USER_CLASS = 15
   private val EXIT_EARLY = 16
+  private val EXIT_KILLED = 17
 
   private var master: ApplicationMaster = _
 

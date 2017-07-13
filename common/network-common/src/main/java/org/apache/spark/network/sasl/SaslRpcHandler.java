@@ -93,7 +93,7 @@ class SaslRpcHandler extends RpcHandler {
       // First message in the handshake, setup the necessary state.
       client.setClientId(saslMessage.appId);
       saslServer = new SparkSaslServer(saslMessage.appId, secretKeyHolder,
-        conf.saslServerAlwaysEncrypt());
+        conf.saslServerAlwaysEncrypt(), conf.clientToAM());
     }
 
     byte[] response;
