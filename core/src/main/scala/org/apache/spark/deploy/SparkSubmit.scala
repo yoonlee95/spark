@@ -151,7 +151,6 @@ object SparkSubmit {
       System.setProperty(key, value)
     }
     val applicationID = ArrayBuffer("--arg", args.submissionToKill).toArray
-    // scalastyle:on println
 
     var mainClass: Class[_] = null
     try {

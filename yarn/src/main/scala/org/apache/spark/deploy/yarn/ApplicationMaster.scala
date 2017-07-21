@@ -475,7 +475,6 @@ private[spark] class ApplicationMaster(
           sc.getConf.get("spark.driver.host"),
           sc.getConf.get("spark.driver.port"),
           isClusterMode = true)
-
         clientToAMPort = sparkConf.getInt("spark.yarn.clientToAM.port", 51291)
         registerAM(sc.getConf, rpcEnv, driverRef, sc.ui.map(_.appUIAddress).getOrElse(""),
           securityMgr)

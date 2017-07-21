@@ -1371,14 +1371,12 @@ private object Client extends Logging {
   }
 
   def yarnKillSubmission(argStrings: Array[String]): Unit = {
-
     // Set an env variable indicating we are running in YARN mode.
     // Note that any env variable with the SPARK_ prefix gets propagated to all (remote) processes
     System.setProperty("SPARK_YARN_MODE", "true")
     val sparkConf = new SparkConf
 
     val args = new ClientArguments(argStrings)
-    val appId = ConverterUtils.toApplicationId(args.userArgs(0))
     new Client(args, sparkConf).killSparkApplication(new SecurityManager(sparkConf))
   }
 

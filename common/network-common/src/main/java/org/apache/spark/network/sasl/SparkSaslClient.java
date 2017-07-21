@@ -55,7 +55,7 @@ public class SparkSaslClient implements SaslEncryptionBackend {
           String secretKeyId,
           SecretKeyHolder secretKeyHolder,
           boolean alwaysEncrypt) {
-    this(secretKeyId,secretKeyHolder,alwaysEncrypt,false);
+    this(secretKeyId,secretKeyHolder,alwaysEncrypt, false);
   }
 
   public SparkSaslClient(
