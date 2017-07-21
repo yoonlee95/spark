@@ -109,7 +109,7 @@ public class TransportConf {
   public int clientThreads() { return conf.getInt(SPARK_NETWORK_IO_CLIENTTHREADS_KEY, 0); }
 
   /** If true, the current RPC connection is from Client to AM */
-  public boolean clientToAM() { return conf.getBoolean("ClientAMToken", false); }
+  public boolean clientToAM() { return conf.getBoolean("ClientAMConnection", false); }
 
   /**
    * Receive buffer size (SO_RCVBUF).

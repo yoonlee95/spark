@@ -181,7 +181,6 @@ public class SparkSaslServer implements SaslEncryptionBackend {
         } else if (callback instanceof PasswordCallback) {
           logger.trace("SASL server callback: setting password");
           pc = (PasswordCallback) callback;
-          pc.setPassword(encodePassword(secretKeyHolder.getSecretKey(secretKeyId)));
         } else if (callback instanceof RealmCallback) {
           logger.trace("SASL server callback: setting realm");
           RealmCallback rc = (RealmCallback) callback;
@@ -213,8 +212,7 @@ public class SparkSaslServer implements SaslEncryptionBackend {
 
   /** Creates an ClientToAMTokenIdentifier from the encoded Base-64 String */
   private static ClientToAMTokenIdentifier getIdentifier(String id) throws InvalidToken {
-    String decodedIdentifier= decodeIdentifier(id);
-    byte[] tokenId = byteBufToByte(Base64.decode(Unpooled.wrappedBuffer(decodedIdentifier.getBytes(StandardCharsets.UTF_8))));
+    byte[] tokenId = byteBufToByte(Base64.decode(Unpooled.wrappedBuffer(id.getBytes(StandardCharsets.UTF_8))));
 
     ClientToAMTokenIdentifier tokenIdentifier =  new ClientToAMTokenIdentifier();
     try {
@@ -228,10 +226,11 @@ public class SparkSaslServer implements SaslEncryptionBackend {
   }
 
   /** Returns an Base64-encoded secretKey created from the Identifier and the secretmanager */
-  private char[] getClientToAMSecretKey(ClientToAMTokenIdentifier tokenid, ClientToAMTokenSecretManager secretManager) throws InvalidToken {
+  private char[] getClientToAMSecretKey(ClientToAMTokenIdentifier tokenid,
+                                        ClientToAMTokenSecretManager secretManager) throws InvalidToken {
     byte[] password =  secretManager.retrievePassword(tokenid);
-    String based64Pasword = Base64.encode(Unpooled.wrappedBuffer(password)).toString(StandardCharsets.UTF_8);
-    return encodePassword(based64Pasword);
+    return Base64.encode(Unpooled.wrappedBuffer(password)).toString(StandardCharsets.UTF_8)
+            .toCharArray();
   }
 
   /** Encode a byte[] identifier as a Base64-encoded string. */

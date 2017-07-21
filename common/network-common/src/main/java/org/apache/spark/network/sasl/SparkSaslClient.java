@@ -48,12 +48,25 @@ public class SparkSaslClient implements SaslEncryptionBackend {
   private final String secretKeyId;
   private final SecretKeyHolder secretKeyHolder;
   private final String expectedQop;
+  private final boolean clientToAMConnection;
   private SaslClient saslClient;
 
-  public SparkSaslClient(String secretKeyId, SecretKeyHolder secretKeyHolder, boolean encrypt) {
+  public SparkSaslClient(
+          String secretKeyId,
+          SecretKeyHolder secretKeyHolder,
+          boolean alwaysEncrypt) {
+    this(secretKeyId,secretKeyHolder,alwaysEncrypt,false);
+  }
+
+  public SparkSaslClient(
+        String secretKeyId,
+        SecretKeyHolder secretKeyHolder,
+        boolean encrypt,
+        boolean clientToAMConnection) {
     this.secretKeyId = secretKeyId;
     this.secretKeyHolder = secretKeyHolder;
     this.expectedQop = encrypt ? QOP_AUTH_CONF : QOP_AUTH;
+    this.clientToAMConnection = clientToAMConnection;
 
     Map<String, String> saslProps = ImmutableMap.<String, String>builder()
       .put(Sasl.QOP, expectedQop)
@@ -131,11 +144,21 @@ public class SparkSaslClient implements SaslEncryptionBackend {
         if (callback instanceof NameCallback) {
           logger.trace("SASL client callback: setting username");
           NameCallback nc = (NameCallback) callback;
-          nc.setName(encodeIdentifier(secretKeyHolder.getSaslUser(secretKeyId)));
+          if (clientToAMConnection) {
+            nc.setName(secretKeyHolder.getSaslUser(secretKeyId));
+          } else {
+            nc.setName(encodeIdentifier(secretKeyHolder.getSaslUser(secretKeyId)));
+          }
+
         } else if (callback instanceof PasswordCallback) {
           logger.trace("SASL client callback: setting password");
           PasswordCallback pc = (PasswordCallback) callback;
-          pc.setPassword(encodePassword(secretKeyHolder.getSecretKey(secretKeyId)));
+          if (clientToAMConnection) {
+            pc.setPassword(secretKeyHolder.getSecretKey(secretKeyId).toCharArray());
+          } else {
+            pc.setPassword(encodePassword(secretKeyHolder.getSecretKey(secretKeyId)));
+
+          }
         } else if (callback instanceof RealmCallback) {
           logger.trace("SASL client callback: setting realm");
           RealmCallback rc = (RealmCallback) callback;

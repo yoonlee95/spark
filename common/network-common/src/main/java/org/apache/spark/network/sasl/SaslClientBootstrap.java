@@ -67,7 +67,7 @@ public class SaslClientBootstrap implements TransportClientBootstrap {
    */
   @Override
   public void doBootstrap(TransportClient client, Channel channel) {
-    SparkSaslClient saslClient = new SparkSaslClient(appId, secretKeyHolder, encrypt);
+    SparkSaslClient saslClient = new SparkSaslClient(appId, secretKeyHolder, encrypt, conf.clientToAM());
     try {
       byte[] payload = saslClient.firstToken();
 

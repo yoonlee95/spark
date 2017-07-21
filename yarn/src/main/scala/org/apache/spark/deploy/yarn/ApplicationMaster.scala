@@ -433,7 +433,7 @@ private[spark] class ApplicationMaster(
                                    securityManager: SecurityManager): RpcEndpointRef = {
     // TODO do we need to create new rpc env?
     val serversparkConf = new SparkConf()
-    serversparkConf.set("ClientAMToken","true")
+    serversparkConf.set("ClientAMConnection","true")
 
     val amRpcEnv =
       RpcEnv.create(ApplicationMaster.SYSTEM_NAME, Utils.localHostName(), port, serversparkConf,
@@ -449,11 +449,11 @@ private[spark] class ApplicationMaster(
   private[spark] class ClientToAMEndpoint(override val rpcEnv: RpcEnv, conf: SparkConf)
     extends RpcEndpoint with Logging {
 
-    override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
-
+    override def receive: PartialFunction[Any, Unit] = {
       case KillApplicaiton =>
         finish(FinalApplicationStatus.KILLED, ApplicationMaster.EXIT_KILLED)
-        context.reply(true)
+    }
+    override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
       case UploadCredential => context.reply(false)
     }
   }

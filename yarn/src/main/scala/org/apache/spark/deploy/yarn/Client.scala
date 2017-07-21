@@ -30,6 +30,7 @@ import scala.collection.mutable.{ArrayBuffer, HashMap, HashSet, ListBuffer, Map}
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
+import scala.util.control.Breaks._
 import scala.collection.JavaConversions._
 
 import io.netty.handler.codec.base64.Base64;
@@ -1251,29 +1252,37 @@ private[spark] class Client(
   def killSparkApplication(securityManager: SecurityManager): Unit = {
     yarnClient.init(yarnConf)
     yarnClient.start
+    val appId = ConverterUtils.toApplicationId(args.userArgs(0))
+    val AMEndpoint = setupAMConnection(appId, securityManager)
 
-    val AMEndpoint = setupAMConnection(ConverterUtils.toApplicationId(args.userArgs(0)), securityManager)
-    val timeout = RpcUtils.askRpcTimeout(sparkConf)
-    val response = AMEndpoint.ask[Boolean](ApplicationMasterMessages.KillApplicaiton)
-    try {
-      val killed = timeout.awaitResult(response)
-      if (!killed) {
-        yarnClient.killApplication(appId)
+    AMEndpoint.send(ApplicationMasterMessages.KillApplicaiton)
+
+    var currentTimeMillis = System.currentTimeMillis
+    val timeKillIssued = currentTimeMillis
+    val killTimeOut  = sparkConf.getInt("spark.yarn.hardKillTimeoutMS",10 * 1000)
+
+    while ((currentTimeMillis < timeKillIssued + killTimeOut)
+        && !isRMInTerminalState(appId)) {
+      try
+        Thread.sleep(1000L)
+      catch {
+        case ie: InterruptedException => break
       }
-    } catch {
-      case e: TimeoutException => yarnClient.killApplication(appId)
+      currentTimeMillis = System.currentTimeMillis
+    }
+
+    if (!isRMInTerminalState(appId)) {
+      yarnClient.killApplication(appId)
     }
 
   }
-  private def setupAMConnection(appId: ApplicationId, securityManager: SecurityManager): RpcEndpointRef = {
+
+  private def setupAMConnection(appId: ApplicationId, securityManager: SecurityManager) = {
 
     val report = getApplicationReport(appId)
     val state = report.getYarnApplicationState
-    logInfo(s"Application report for $appId (state: $state)")
-    logInfo(formatReportDetails(report))
 
-    // TODO, do we want to loop here?
-    if (state != YarnApplicationState.RUNNING) {
+    if ( state != YarnApplicationState.RUNNING) {
       throw new SparkException(s"Application $appId needs to be in RUNNING state to push " +
         s"credentials, it is currently in state: $state")
     }
@@ -1301,6 +1310,7 @@ private[spark] class Client(
       securityManager.setSecretKey(secretkeystring)
     }
 
+    sparkConf.set("ClientAMConnection","true")
     val rpcEnv =
       RpcEnv.create("yarnDriverClient", Utils.localHostName(), 0, sparkConf, securityManager)
 
@@ -1309,6 +1319,18 @@ private[spark] class Client(
       ApplicationMaster.ENDPOINT_NAME)
 
     AMEndpoint
+  }
+
+  private def checkRMStatus(appId: ApplicationId): YarnApplicationState = {
+    val report = getApplicationReport(appId)
+    report.getYarnApplicationState
+  }
+
+  private def isRMInTerminalState(appId: ApplicationId): Boolean = {
+    var status = checkRMStatus(appId)
+    return (status == YarnApplicationState.KILLED
+        || status == YarnApplicationState.FAILED
+        || status == YarnApplicationState.FINISHED)
   }
 
   private def findPySparkArchives(): Seq[String] = {
