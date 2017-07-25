@@ -454,10 +454,12 @@ private[spark] class ApplicationMaster(
     override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
       case ApplicationMasterMessages.KillApplication =>
         if (securityManager.checkModifyPermissions(context.senderUserName)) {
-          finish(FinalApplicationStatus.KILLED, ApplicationMaster.EXIT_KILLED)
           context.reply(true)
+          finish(FinalApplicationStatus.KILLED, ApplicationMaster.EXIT_KILLED)
+        } else {
+          context.reply(false)
         }
-        context.reply(false)
+
 
 
       case ApplicationMasterMessages.UploadCredential =>

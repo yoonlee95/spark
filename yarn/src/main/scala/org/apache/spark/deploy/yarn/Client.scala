@@ -1278,7 +1278,7 @@ private[spark] class Client(
     }
   }
 
-  private def setupAMConnection(appId: ApplicationId, securityManager: SecurityManager) = {
+  private def setupAMConnection(appId: ApplicationId, securityManager: SecurityManager): RpcEndpointRef = {
     val report = getApplicationReport(appId)
     val state = report.getYarnApplicationState
     if (report.getHost() == null || "".equals(report.getHost()) || "N/A".equals(report.getHost())) {
