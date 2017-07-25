@@ -115,7 +115,7 @@ public class SparkSaslServer implements SaslEncryptionBackend {
   }
 
   /**
-   * Determines whether the authentication exchange has completed successfully.
+   * Returns User Name obtained from the ClientToAMToken
    */
   public String getUserName() {
     return clientUser;

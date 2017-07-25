@@ -1303,17 +1303,17 @@ private[spark] class Client(
       // do we need to handle any host name conversions?
       val serviceAddr = new InetSocketAddress(report.getHost(), report.getRpcPort())
 
-      val clientToAMToken = report.getClientToAMToken()
+      val clientToAMToken = report.getClientToAMToken
       val token =
         ConverterUtils.convertFromYarn(clientToAMToken, serviceAddr)
 
       // Fetch Identifier from the report and Set it in the Security Manager
-      val userName = token.getIdentifier()
+      val userName = token.getIdentifier
       var userstring = Base64.encode(Unpooled.wrappedBuffer(userName)).toString(UTF_8);
       securityManager.setidentifier(userstring)
 
       // Fetch Secretkey from the report and Set it in the Security Manager
-      val secretkey = token.getPassword()
+      val secretkey = token.getPassword
       var secretkeystring = Base64.encode(Unpooled.wrappedBuffer(secretkey)).toString(UTF_8);
       securityManager.setSecretKey(secretkeystring)
     }

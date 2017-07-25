@@ -431,7 +431,6 @@ private[spark] class ApplicationMaster(
                                    port: Int,
                                    isClusterMode: Boolean,
                                    securityManager: SecurityManager): RpcEndpointRef = {
-    // TODO do we need to create new rpc env?
     val serversparkConf = new SparkConf()
     serversparkConf.set("ClientAMConnection","true")
 
@@ -449,8 +448,6 @@ private[spark] class ApplicationMaster(
   private[spark] class ClientToAMEndpoint(override val rpcEnv: RpcEnv, securityManager: SecurityManager)
     extends RpcEndpoint with Logging {
 
-//    override def receive: PartialFunction[Any, Unit] = {
-//    }
     override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
       case ApplicationMasterMessages.KillApplication =>
         if (securityManager.checkModifyPermissions(context.senderUserName)) {
@@ -461,8 +458,6 @@ private[spark] class ApplicationMaster(
 
 
       case ApplicationMasterMessages.UploadCredential =>
-        var host = context.senderAddress.toString
-        logInfo(s"Host Name : $host")
         context.reply(false)
     }
   }
@@ -488,7 +483,7 @@ private[spark] class ApplicationMaster(
         registerAM(sc.getConf, rpcEnv, driverRef, sc.ui.map(_.appUIAddress).getOrElse(""),
           securityMgr)
 
-        createClientToAMRpcEndpoint()
+        createClientToAMRpcEndpoint
       } else {
         // Sanity check; should never happen in normal operation, since sc should only be null
         // if the user app did not create a SparkContext.
