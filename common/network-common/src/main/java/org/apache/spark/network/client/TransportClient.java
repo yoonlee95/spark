@@ -120,21 +120,22 @@ public class TransportClient implements Closeable {
   /**
    * Returns the user name used by the client to authenticate itself when authentication is enabled.
    *
-   * @return The client ID, or null if authentication is disabled.
+   * @return The client User Name, or null if authentication is disabled.
    */
   public String getClientUser() {
     return clientUser;
   }
 
   /**
-   * Sets the authenticated client UserName. This is meant to be used by the authentication layer.
+   * Sets the authenticated client User Name. This is meant to be used by the authentication layer.
    *
-   * Trying to set a different client ID after it's been set will result in an exception.
+   * Trying to set a different client User Name after it's been set will result in an exception.
    */
   public void setCLientUser(String user) {
-    Preconditions.checkState(clientUser == null, "Client ID has already been set.");
+    Preconditions.checkState(clientUser == null, "Client User Name has already been set.");
     this.clientUser = user;
   }
+
   /**
    * Requests a single chunk from the remote side, from the pre-negotiated streamId.
    *

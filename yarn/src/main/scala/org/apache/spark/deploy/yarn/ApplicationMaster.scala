@@ -243,7 +243,9 @@ private[spark] class ApplicationMaster(
 
         if (!unregistered) {
           // we only want to unregister if we don't want the RM to retry
-          if (finalStatus == FinalApplicationStatus.SUCCEEDED ||finalStatus == FinalApplicationStatus.KILLED ||  isLastAttempt) {
+          if (finalStatus == FinalApplicationStatus.SUCCEEDED ||
+            finalStatus == FinalApplicationStatus.KILLED ||
+            isLastAttempt) {
             unregister(finalStatus, finalMsg)
             cleanupStagingDir(fs)
           }
@@ -445,7 +447,8 @@ private[spark] class ApplicationMaster(
   }
 
   /** RpcEndpoint class for ClientToAM */
-  private[spark] class ClientToAMEndpoint(override val rpcEnv: RpcEnv, securityManager: SecurityManager)
+  private[spark] class ClientToAMEndpoint(
+      override val rpcEnv: RpcEnv, securityManager: SecurityManager)
     extends RpcEndpoint with Logging {
 
     override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
@@ -506,7 +509,8 @@ private[spark] class ApplicationMaster(
   private def createClientToAMRpcEndpoint(): Unit = {
     // Obtain RM Masterkey and set the securityManagers SecretKey to it
     val clientToAMSecurityManager = new SecurityManager(sparkConf)
-    var masterkeyString = Base64.encode(Unpooled.wrappedBuffer(client.getMasterKey)).toString(Charsets.UTF_8);
+    var masterkeyString =
+      Base64.encode(Unpooled.wrappedBuffer(client.getMasterKey)).toString(Charsets.UTF_8);
     clientToAMSecurityManager.setSecretKey(masterkeyString);
 
     runClientAMEndpoint(Utils.localHostName(), clientToAMPort, isClusterMode = true,

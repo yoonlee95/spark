@@ -1254,21 +1254,16 @@ private[spark] class Client(
     yarnClient.start
     val appId = ConverterUtils.toApplicationId(args.userArgs(0))
     val AMEndpoint = setupAMConnection(appId, securityManager)
-
     val timeout = RpcUtils.askRpcTimeout(sparkConf)
-
     val success = timeout.awaitResult(
       AMEndpoint.ask[Boolean](KillApplication))
 
     if (!success) {
-      throw new SparkException("User doesn't have modifiy ACL for the Application")
+      throw new SparkException(s"Current user doesn't have modifiy ACL for the Application : $appId")
     }
-
-
     var currentTimeMillis = System.currentTimeMillis
     val timeKillIssued = currentTimeMillis
     val killTimeOut  = sparkConf.getInt("spark.yarn.hardKillTimeoutMS",10 * 1000)
-
     while ((currentTimeMillis < timeKillIssued + killTimeOut)
         && !isRMInTerminalState(appId)) {
       try
@@ -1278,19 +1273,14 @@ private[spark] class Client(
       }
       currentTimeMillis = System.currentTimeMillis
     }
-
     if (!isRMInTerminalState(appId)) {
       yarnClient.killApplication(appId)
     }
-
   }
 
   private def setupAMConnection(appId: ApplicationId, securityManager: SecurityManager) = {
-
     val report = getApplicationReport(appId)
     val state = report.getYarnApplicationState
-
-
     if (report.getHost() == null || "".equals(report.getHost()) || "N/A".equals(report.getHost())) {
       throw new SparkException(s"AM for $appId not assigned or dont have view ACL for it")
     }
@@ -1298,7 +1288,6 @@ private[spark] class Client(
       throw new SparkException(s"Application $appId needs to be in RUNNING state to push " +
         s"credentials, it is currently in state: $state , $report")
     }
-
 
     if (UserGroupInformation.isSecurityEnabled()) {
       // do we need to handle any host name conversions?
@@ -1308,12 +1297,10 @@ private[spark] class Client(
       val token =
         ConverterUtils.convertFromYarn(clientToAMToken, serviceAddr)
 
-      // Fetch Identifier from the report and Set it in the Security Manager
+      // Fetch Identifier, secretkey from the report and Set it in the Security Manager
       val userName = token.getIdentifier
       var userstring = Base64.encode(Unpooled.wrappedBuffer(userName)).toString(UTF_8);
       securityManager.setidentifier(userstring)
-
-      // Fetch Secretkey from the report and Set it in the Security Manager
       val secretkey = token.getPassword
       var secretkeystring = Base64.encode(Unpooled.wrappedBuffer(secretkey)).toString(UTF_8);
       securityManager.setSecretKey(secretkeystring)
@@ -1322,7 +1309,6 @@ private[spark] class Client(
     sparkConf.set("ClientAMConnection","true")
     val rpcEnv =
       RpcEnv.create("yarnDriverClient", Utils.localHostName(), 0, sparkConf, securityManager)
-
     val AMHostPort = RpcAddress(report.getHost, report.getRpcPort)
     val AMEndpoint = rpcEnv.setupEndpointRef(AMHostPort,
       ApplicationMaster.ENDPOINT_NAME)
@@ -1380,11 +1366,8 @@ private object Client extends Logging {
   }
 
   def yarnKillSubmission(argStrings: Array[String]): Unit = {
-    // Set an env variable indicating we are running in YARN mode.
-    // Note that any env variable with the SPARK_ prefix gets propagated to all (remote) processes
     System.setProperty("SPARK_YARN_MODE", "true")
     val sparkConf = new SparkConf
-
     val args = new ClientArguments(argStrings)
     new Client(args, sparkConf).killSparkApplication(new SecurityManager(sparkConf))
   }

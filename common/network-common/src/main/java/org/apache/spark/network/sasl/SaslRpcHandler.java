@@ -111,6 +111,7 @@ class SaslRpcHandler extends RpcHandler {
     // method returns. This assumes that the code ensures, through other means, that no outbound
     // messages are being written to the channel while negotiation is still going on.
     if (saslServer.isComplete()) {
+      //Propagate UserName from the ClientToAMToken to RpcCallContext during an Client to AM connection
       if (conf.clientToAM()) {
         client.setCLientUser(saslServer.getUserName());
       }
