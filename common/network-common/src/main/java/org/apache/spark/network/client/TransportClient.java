@@ -77,6 +77,7 @@ public class TransportClient implements Closeable {
   private final Channel channel;
   private final TransportResponseHandler handler;
   @Nullable private String clientId;
+  @Nullable private String clientUser;
   private volatile boolean timedOut;
 
   public TransportClient(Channel channel, TransportResponseHandler handler) {
@@ -116,6 +117,14 @@ public class TransportClient implements Closeable {
     this.clientId = id;
   }
 
+  public String getClientUser() {
+    return clientUser;
+  }
+
+  public void setCLientUser(String user) {
+    Preconditions.checkState(clientUser == null, "Client ID has already been set.");
+    this.clientUser = user;
+  }
   /**
    * Requests a single chunk from the remote side, from the pre-negotiated streamId.
    *

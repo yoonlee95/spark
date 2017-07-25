@@ -57,7 +57,7 @@ import org.apache.hadoop.yarn.util.{Records, ConverterUtils}
 import org.apache.spark.{SecurityManager, SparkConf, SparkContext, SparkException}
 import org.apache.spark.deploy.SparkHadoopUtil
 import org.apache.spark.deploy.yarn.config._
-import org.apache.spark.deploy.yarn.ApplicationMasterMessages
+import org.apache.spark.deploy.yarn.ApplicationMasterMessages.{KillApplication , UploadCredential}
 import org.apache.spark.deploy.yarn.security.ConfigurableCredentialManager
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config._
@@ -1255,7 +1255,15 @@ private[spark] class Client(
     val appId = ConverterUtils.toApplicationId(args.userArgs(0))
     val AMEndpoint = setupAMConnection(appId, securityManager)
 
-    AMEndpoint.send(ApplicationMasterMessages.KillApplicaiton)
+    val timeout = RpcUtils.askRpcTimeout(sparkConf)
+
+    val success = timeout.awaitResult(
+      AMEndpoint.ask[Boolean](KillApplication))
+
+    if (!success) {
+      return
+    }
+
 
     var currentTimeMillis = System.currentTimeMillis
     val timeKillIssued = currentTimeMillis

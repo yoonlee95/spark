@@ -528,7 +528,10 @@ private[netty] class NettyRpcEndpointRef(
  * The message that is sent from the sender to the receiver.
  */
 private[netty] case class RequestMessage(
-    senderAddress: RpcAddress, receiver: NettyRpcEndpointRef, content: Any)
+    senderAddress: RpcAddress,
+    receiver: NettyRpcEndpointRef,
+    content: Any,
+    senderUserName: String = null)
 
 /**
  * A response that indicates some failure happens in the receiver side.
@@ -574,7 +577,15 @@ private[netty] class NettyRpcHandler(
     val addr = client.getChannel().remoteAddress().asInstanceOf[InetSocketAddress]
     assert(addr != null)
     val clientAddr = RpcAddress(addr.getHostString, addr.getPort)
-    val requestMessage = nettyEnv.deserialize[RequestMessage](client, message)
+
+    var requestMessage = nettyEnv.deserialize[RequestMessage](client, message)
+    logInfo(s"Request Message : $requestMessage")
+    if (client.getClientUser != null) {
+      logInfo("Client User is not null")
+      requestMessage = RequestMessage(clientAddr, requestMessage.receiver,
+        requestMessage.content, client.getClientUser)
+    }
+
     if (requestMessage.senderAddress == null) {
       // Create a new message with the socket address of the client as the sender.
       RequestMessage(clientAddr, requestMessage.receiver, requestMessage.content)

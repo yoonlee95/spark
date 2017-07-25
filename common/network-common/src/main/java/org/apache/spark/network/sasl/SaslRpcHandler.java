@@ -111,6 +111,9 @@ class SaslRpcHandler extends RpcHandler {
     // method returns. This assumes that the code ensures, through other means, that no outbound
     // messages are being written to the channel while negotiation is still going on.
     if (saslServer.isComplete()) {
+      if (conf.clientToAM()) {
+        client.setCLientUser(saslServer.getUserName());
+      }
       logger.debug("SASL authentication successful for channel {}", client);
       isComplete = true;
       if (SparkSaslServer.QOP_AUTH_CONF.equals(saslServer.getNegotiatedProperty(Sasl.QOP))) {

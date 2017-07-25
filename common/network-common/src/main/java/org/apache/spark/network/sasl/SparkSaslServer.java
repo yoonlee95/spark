@@ -79,6 +79,7 @@ public class SparkSaslServer implements SaslEncryptionBackend {
   private final String secretKeyId;
   private final SecretKeyHolder secretKeyHolder;
   private final boolean clientToAMConnection;
+  private String clientUser;
   private SaslServer saslServer;
 
   public SparkSaslServer(
@@ -111,6 +112,13 @@ public class SparkSaslServer implements SaslEncryptionBackend {
     } catch (SaslException e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  /**
+   * Determines whether the authentication exchange has completed successfully.
+   */
+  public String getUserName() {
+    return clientUser;
   }
 
   /**
@@ -202,7 +210,9 @@ public class SparkSaslServer implements SaslEncryptionBackend {
         if (clientToAMConnection) {
           ClientToAMTokenSecretManager secretManager = new ClientToAMTokenSecretManager(null,
               decodeMasterKey(secretKeyHolder.getSecretKey(secretKeyId)));
-          pc.setPassword(getClientToAMSecretKey(getIdentifier(nc.getDefaultName()), secretManager));
+          ClientToAMTokenIdentifier identifier = getIdentifier(nc.getDefaultName());
+          clientUser = identifier.getUser().getShortUserName();
+          pc.setPassword(getClientToAMSecretKey(identifier, secretManager));
         } else {
           pc.setPassword(encodePassword(secretKeyHolder.getSecretKey(secretKeyId)));
         }

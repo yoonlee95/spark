@@ -43,7 +43,6 @@ import org.apache.hadoop.yarn.util.{ConverterUtils, Records}
 import org.apache.spark._
 import org.apache.spark.deploy.SparkHadoopUtil
 import org.apache.spark.deploy.history.HistoryServer
-import org.apache.spark.deploy.yarn.ApplicationMasterMessages._
 import org.apache.spark.deploy.yarn.config._
 import org.apache.spark.deploy.yarn.security.{AMCredentialRenewer, ConfigurableCredentialManager}
 import org.apache.spark.internal.Logging
@@ -58,6 +57,7 @@ import org.apache.spark.network.netty.{SparkTransportConf, NettyBlockRpcServer}
 import org.apache.spark.network.sasl.{SaslClientBootstrap, SaslServerBootstrap}
 import org.apache.spark.network.server.{TransportServer, TransportServerBootstrap}
 import org.apache.spark.serializer.JavaSerializer
+import org.apache.spark.rpc.netty.NettyRpcCallContext
 
 /**
  * Common application master functionality for Spark on Yarn.
@@ -441,20 +441,29 @@ private[spark] class ApplicationMaster(
 
     val clientAMEndpoint =
       amRpcEnv.setupEndpoint(ApplicationMaster.ENDPOINT_NAME, new ClientToAMEndpoint(amRpcEnv,
-        sparkConf))
+        securityManager))
     clientAMEndpoint
   }
 
   /** RpcEndpoint class for ClientToAM */
-  private[spark] class ClientToAMEndpoint(override val rpcEnv: RpcEnv, conf: SparkConf)
+  private[spark] class ClientToAMEndpoint(override val rpcEnv: RpcEnv, securityManager: SecurityManager)
     extends RpcEndpoint with Logging {
 
-    override def receive: PartialFunction[Any, Unit] = {
-      case KillApplicaiton =>
-        finish(FinalApplicationStatus.KILLED, ApplicationMaster.EXIT_KILLED)
-    }
+//    override def receive: PartialFunction[Any, Unit] = {
+//    }
     override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
-      case UploadCredential => context.reply(false)
+      case ApplicationMasterMessages.KillApplication =>
+        if (securityManager.checkModifyPermissions(context.senderUserName)) {
+          finish(FinalApplicationStatus.KILLED, ApplicationMaster.EXIT_KILLED)
+          context.reply(true)
+        }
+        context.reply(false)
+
+
+      case ApplicationMasterMessages.UploadCredential =>
+        var host = context.senderAddress.toString
+        logInfo(s"Host Name : $host")
+        context.reply(false)
     }
   }
 
@@ -819,9 +828,9 @@ private[spark] class ApplicationMaster(
 
 sealed trait ApplicationMasterMessage extends Serializable
 
-private[spark] object ApplicationMasterMessages {
+private [spark] object ApplicationMasterMessages {
 
-  case class KillApplicaiton() extends ApplicationMasterMessage
+  case class KillApplication() extends ApplicationMasterMessage
 
   case class UploadCredential() extends ApplicationMasterMessage
 
