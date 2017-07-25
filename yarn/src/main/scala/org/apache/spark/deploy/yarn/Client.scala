@@ -1261,7 +1261,7 @@ private[spark] class Client(
       AMEndpoint.ask[Boolean](KillApplication))
 
     if (!success) {
-      return
+      throw new SparkException("User doesn't have modifiy ACL for the Application")
     }
 
 
@@ -1290,14 +1290,15 @@ private[spark] class Client(
     val report = getApplicationReport(appId)
     val state = report.getYarnApplicationState
 
-    if ( state != YarnApplicationState.RUNNING) {
-      throw new SparkException(s"Application $appId needs to be in RUNNING state to push " +
-        s"credentials, it is currently in state: $state")
-    }
 
     if (report.getHost() == null || "".equals(report.getHost()) || "N/A".equals(report.getHost())) {
-      throw new SparkException(s"AM for $appId not assigned")
+      throw new SparkException(s"AM for $appId not assigned or dont have view ACL for it")
     }
+    if ( state != YarnApplicationState.RUNNING) {
+      throw new SparkException(s"Application $appId needs to be in RUNNING state to push " +
+        s"credentials, it is currently in state: $state , $report")
+    }
+
 
     if (UserGroupInformation.isSecurityEnabled()) {
       // do we need to handle any host name conversions?
