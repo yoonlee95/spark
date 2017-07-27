@@ -439,7 +439,7 @@ class SparkSubmitCommandBuilder extends AbstractCommandBuilder {
           allowsMixedArguments = true;
           appResource = specialClasses.get(value);
         }
-      } else if (opt.equals(KILL_SUBMISSION) || opt.equals(STATUS)) {
+      } else if (opt.equals(KILL_SUBMISSION) || opt.equals(STATUS) || opt.equals(UPLOAD_CRED_SUBMISSION)) {
         isAppResourceReq = false;
         sparkArgs.add(opt);
         sparkArgs.add(value);

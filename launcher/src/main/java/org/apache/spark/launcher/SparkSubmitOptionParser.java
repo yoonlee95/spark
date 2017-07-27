@@ -48,6 +48,7 @@ class SparkSubmitOptionParser {
   protected final String FILES = "--files";
   protected final String JARS = "--jars";
   protected final String KILL_SUBMISSION = "--kill";
+  protected final String UPLOAD_CRED_SUBMISSION = "--upload_cred";
   protected final String MASTER = "--master";
   protected final String NAME = "--name";
   protected final String PACKAGES = "--packages";
@@ -102,6 +103,7 @@ class SparkSubmitOptionParser {
     { JARS },
     { KEYTAB },
     { KILL_SUBMISSION },
+    { UPLOAD_CRED_SUBMISSION },
     { MASTER },
     { NAME },
     { NUM_EXECUTORS },

@@ -46,6 +46,9 @@ private[spark] object CoarseGrainedClusterMessages {
   case class KillExecutorsOnHost(host: String)
     extends CoarseGrainedClusterMessage
 
+  case class UploadCredentials(credential: Array[Byte])
+    extends CoarseGrainedClusterMessage
+
   sealed trait RegisterExecutorResponse
 
   case object RegisteredExecutor extends CoarseGrainedClusterMessage with RegisterExecutorResponse

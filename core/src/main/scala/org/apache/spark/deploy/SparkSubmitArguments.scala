@@ -75,6 +75,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
   var supervise: Boolean = false
   var driverCores: String = null
   var submissionToKill: String = null
+  var submissionToUploadCredential: String = null
   var submissionToRequestStatusFor: String = null
   var useRest: Boolean = true // used internally
 
@@ -233,6 +234,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
       case SUBMIT => validateSubmitArguments()
       case KILL => validateKillArguments()
       case REQUEST_STATUS => validateStatusRequestArguments()
+      case UPLOAD_CREDENTIALS => validateUploadCredentialArguments()
     }
   }
 
@@ -265,6 +267,16 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
 
   private def validateKillArguments(): Unit = {
     if (submissionToKill == null) {
+      SparkSubmit.printErrorAndExit("Please specify a submission to kill.")
+    }
+  }
+
+  private def validateUploadCredentialArguments(): Unit = {
+    if (!master.startsWith("yarn")) {
+      SparkSubmit.printErrorAndExit(
+        "Requesting Credential Uploading is only supported in Yarn mode!")
+    }
+    if (submissionToUploadCredential == null) {
       SparkSubmit.printErrorAndExit("Please specify a submission to kill.")
     }
   }
@@ -372,6 +384,13 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
           SparkSubmit.printErrorAndExit(s"Action cannot be both $action and $KILL.")
         }
         action = KILL
+
+      case UPLOAD_CRED_SUBMISSION =>
+        submissionToUploadCredential = value
+        if (action != null) {
+          SparkSubmit.printErrorAndExit(s"Action cannot be both $action and $UPLOAD_CREDENTIALS.")
+        }
+        action = UPLOAD_CREDENTIALS
 
       case STATUS =>
         submissionToRequestStatusFor = value
@@ -526,12 +545,13 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
         |  --verbose, -v               Print additional debug output.
         |  --version,                  Print the version of current Spark.
         |
+        |  --kill SUBMISSION_ID        If given, kills the driver specified.
+        |
         | Spark standalone with cluster deploy mode only:
         |  --driver-cores NUM          Cores for driver (Default: 1).
         |
         | Spark standalone or Mesos with cluster deploy mode only:
         |  --supervise                 If given, restarts the driver on failure.
-        |  --kill SUBMISSION_ID        If given, kills the driver specified.
         |  --status SUBMISSION_ID      If given, requests the status of the driver specified.
         |
         | Spark standalone and Mesos only:
@@ -542,6 +562,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
         |                              or all available cores on the worker in standalone mode)
         |
         | YARN-only:
+        |  --upload_cred SUBMISSION_ID Upload credential of the given application
         |  --driver-cores NUM          Number of cores used by the driver, only in cluster mode
         |                              (Default: 1).
         |  --queue QUEUE_NAME          The YARN queue to submit to (Default: "default").

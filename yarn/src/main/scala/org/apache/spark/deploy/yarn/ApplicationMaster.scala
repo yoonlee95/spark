@@ -19,7 +19,7 @@ package org.apache.spark.deploy.yarn
 
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec;
-import java.io.{File, IOException}
+import java.io.{ByteArrayInputStream, DataInputStream, File, IOException}
 import java.lang.reflect.InvocationTargetException
 import java.net.{Socket, URI, URL}
 import java.util.concurrent.{TimeoutException, TimeUnit}
@@ -39,6 +39,7 @@ import org.apache.hadoop.yarn.api._
 import org.apache.hadoop.yarn.api.records._
 import org.apache.hadoop.yarn.conf.YarnConfiguration
 import org.apache.hadoop.yarn.util.{ConverterUtils, Records}
+import org.apache.hadoop.security.{Credentials, UserGroupInformation}
 
 import org.apache.spark._
 import org.apache.spark.deploy.SparkHadoopUtil
@@ -432,6 +433,7 @@ private[spark] class ApplicationMaster(
                                    host: String,
                                    port: Int,
                                    isClusterMode: Boolean,
+                                   sc: SparkContext,
                                    securityManager: SecurityManager): RpcEndpointRef = {
     val serversparkConf = new SparkConf()
     serversparkConf.set("ClientAMConnection","true")
@@ -441,14 +443,14 @@ private[spark] class ApplicationMaster(
         securityManager)
 
     val clientAMEndpoint =
-      amRpcEnv.setupEndpoint(ApplicationMaster.ENDPOINT_NAME, new ClientToAMEndpoint(amRpcEnv,
+      amRpcEnv.setupEndpoint(ApplicationMaster.ENDPOINT_NAME, new ClientToAMEndpoint(amRpcEnv, sc,
         securityManager))
     clientAMEndpoint
   }
 
   /** RpcEndpoint class for ClientToAM */
   private[spark] class ClientToAMEndpoint(
-      override val rpcEnv: RpcEnv, securityManager: SecurityManager)
+      override val rpcEnv: RpcEnv, sc: SparkContext, securityManager: SecurityManager)
     extends RpcEndpoint with Logging {
 
     override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
@@ -460,10 +462,36 @@ private[spark] class ApplicationMaster(
           context.reply(false)
         }
 
+      case ApplicationMasterMessages.UploadCredential(c) =>
+        if (securityManager.checkModifyPermissions(context.senderUserName)) {
+          context.reply(true)
+          logInfo("IN AM PRINTING CREDENTIALS")
 
+          val dataInput = new DataInputStream(new ByteArrayInputStream(c))
+          val credentials = new Credentials
+          credentials.readFields(dataInput)
+          if (credentials != null) {
+            logInfo(YarnSparkHadoopUtil.get.dumpTokens(credentials).mkString("\n"))
+          }
+          UserGroupInformation.getCurrentUser.addCredentials(credentials)
 
-      case ApplicationMasterMessages.UploadCredential =>
-        context.reply(false)
+          sc.schedulerBackend match {
+            case s: CoarseGrainedSchedulerBackend =>
+              logInfo(s"Update credentials in driver")
+              val f = s.updateCredentials(c)
+              f onSuccess {
+                case b => context.reply(b)
+              }
+              f onFailure {
+                case NonFatal(e) => context.sendFailure(e)
+              e}
+            case _ =>
+              throw new SparkException(s"Update credentials on" +
+                s" ${sc.schedulerBackend.getClass.getSimpleName} is not supported")
+          }
+        } else {
+          context.reply(false)
+        }
     }
   }
 
@@ -480,15 +508,15 @@ private[spark] class ApplicationMaster(
         Duration(totalWaitTime, TimeUnit.MILLISECONDS))
       if (sc != null) {
         rpcEnv = sc.env.rpcEnv
+        clientToAMPort = sparkConf.getInt("spark.yarn.clientToAM.port", 51291)
         val driverRef = runAMEndpoint(
           sc.getConf.get("spark.driver.host"),
           sc.getConf.get("spark.driver.port"),
           isClusterMode = true)
-        clientToAMPort = sparkConf.getInt("spark.yarn.clientToAM.port", 51291)
         registerAM(sc.getConf, rpcEnv, driverRef, sc.ui.map(_.appUIAddress).getOrElse(""),
           securityMgr)
 
-        createClientToAMRpcEndpoint
+        createClientToAMRpcEndpoint(sc)
       } else {
         // Sanity check; should never happen in normal operation, since sc should only be null
         // if the user app did not create a SparkContext.
@@ -508,7 +536,7 @@ private[spark] class ApplicationMaster(
     }
   }
 
-  private def createClientToAMRpcEndpoint(): Unit = {
+  private def createClientToAMRpcEndpoint(sc: SparkContext): Unit = {
     // Obtain RM Masterkey and set the securityManagers SecretKey to it
     val clientToAMSecurityManager = new SecurityManager(sparkConf)
     var masterkeyString =
@@ -516,7 +544,7 @@ private[spark] class ApplicationMaster(
     clientToAMSecurityManager.setSecretKey(masterkeyString);
 
     runClientAMEndpoint(Utils.localHostName(), clientToAMPort, isClusterMode = true,
-      clientToAMSecurityManager)
+      sc, clientToAMSecurityManager)
   }
 
   private def runExecutorLauncher(securityMgr: SecurityManager): Unit = {
@@ -833,7 +861,7 @@ private [spark] object ApplicationMasterMessages {
 
   case class KillApplication() extends ApplicationMasterMessage
 
-  case class UploadCredential() extends ApplicationMasterMessage
+  case class UploadCredential(credentials: Array[Byte]) extends ApplicationMasterMessage
 
 }
 

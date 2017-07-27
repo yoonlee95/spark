@@ -581,7 +581,6 @@ private[netty] class NettyRpcHandler(
     var requestMessage = nettyEnv.deserialize[RequestMessage](client, message)
     logInfo(s"Request Message : $requestMessage")
     if (client.getClientUser != null) {
-      logInfo("Client User is not null")
       requestMessage = RequestMessage(clientAddr, requestMessage.receiver,
         requestMessage.content, client.getClientUser)
     }

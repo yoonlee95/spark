@@ -1277,7 +1277,30 @@ private[spark] class Client(
       yarnClient.killApplication(appId)
     }
   }
+  def uploadCredential(securityManager: SecurityManager): Unit = {
+    yarnClient.init(yarnConf)
+    yarnClient.start
 
+    setupCredentials()
+    credentialManager.obtainCredentials(hadoopConf, credentials)
+
+    val dob = new DataOutputBuffer()
+    if (credentials != null) {
+      UserGroupInformation.getCurrentUser.addCredentials(credentials)
+      credentials.write(dob)
+      logDebug(YarnSparkHadoopUtil.get.dumpTokens(credentials).mkString("\n"))
+    }
+
+    val appId = ConverterUtils.toApplicationId(args.userArgs(0))
+    val AMEndpoint = setupAMConnection(appId, securityManager)
+    val timeout = RpcUtils.askRpcTimeout(sparkConf)
+    val success = timeout.awaitResult(
+      AMEndpoint.ask[Boolean](UploadCredential(dob.getData)))
+
+    if (!success) {
+      throw new SparkException(s"Current user doesn't have modifiy ACL for the Application : $appId")
+    }
+  }
   private def setupAMConnection(appId: ApplicationId, securityManager: SecurityManager): RpcEndpointRef = {
     val report = getApplicationReport(appId)
     val state = report.getYarnApplicationState
@@ -1372,6 +1395,12 @@ private object Client extends Logging {
     new Client(args, sparkConf).killSparkApplication(new SecurityManager(sparkConf))
   }
 
+  def uploadCredentialSubmission(argStrings: Array[String]): Unit = {
+    System.setProperty("SPARK_YARN_MODE", "true")
+    val sparkConf = new SparkConf
+    val args = new ClientArguments(argStrings)
+    new Client(args, sparkConf).uploadCredential(new SecurityManager(sparkConf))
+  }
   // Alias for the user jar
   val APP_JAR_NAME: String = "__app__.jar"
 

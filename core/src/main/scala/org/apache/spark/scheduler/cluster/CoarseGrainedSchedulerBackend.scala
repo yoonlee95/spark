@@ -23,7 +23,12 @@ import javax.annotation.concurrent.GuardedBy
 
 import scala.collection.mutable.{ArrayBuffer, HashMap, HashSet}
 import scala.concurrent.Future
-import scala.concurrent.duration.Duration
+import scala.util.control.NonFatal
+import scala.util.{Failure, Success}
+import scala.util.control.NonFatal
+
+import org.apache.hadoop.io.DataOutputBuffer
+import org.apache.hadoop.security.UserGroupInformation
 
 import org.apache.spark.{ExecutorAllocationClient, SparkEnv, SparkException, TaskState}
 import org.apache.spark.internal.Logging
@@ -203,7 +208,19 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
             SparkListenerExecutorAdded(System.currentTimeMillis(), executorId, data))
           makeOffers()
         }
+      case UploadCredentials(c) =>
+        logInfo("Came to upload Cred in Scheduler")
+        val futures = executorDataMap.map { case (_, e) =>
+          e.executorEndpoint.ask[Boolean](UploadCredentials(c))
+        }
 
+        implicit val executor = ThreadUtils.sameThread
+        Future.sequence(futures)
+          .map { booleans => booleans.reduce(_ && _) }
+          .andThen {
+            case Success(b) => context.reply(b)
+            case Failure(NonFatal(e)) => context.sendFailure(e)
+        }
       case StopDriver =>
         context.reply(true)
         stop()
@@ -647,6 +664,9 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
     // Kill all the executors on this host in an event loop to ensure serialization.
     driverEndpoint.send(KillExecutorsOnHost(host))
     true
+  }
+  def updateCredentials(credential: Array[Byte]): Future[Boolean] = {
+    driverEndpoint.ask[Boolean](UploadCredentials(credential))
   }
 }
 

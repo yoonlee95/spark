@@ -54,7 +54,7 @@ import org.apache.spark.util.{ChildFirstURLClassLoader, MutableURLClassLoader, U
  */
 private[deploy] object SparkSubmitAction extends Enumeration {
   type SparkSubmitAction = Value
-  val SUBMIT, KILL, REQUEST_STATUS = Value
+  val SUBMIT, KILL, REQUEST_STATUS, UPLOAD_CREDENTIALS = Value
 }
 
 /**
@@ -126,6 +126,7 @@ object SparkSubmit {
       case SparkSubmitAction.SUBMIT => submit(appArgs)
       case SparkSubmitAction.KILL => kill(appArgs)
       case SparkSubmitAction.REQUEST_STATUS => requestStatus(appArgs)
+      case SparkSubmitAction.UPLOAD_CREDENTIALS => yarnUploadCredentials(appArgs)
     }
   }
 
@@ -175,6 +176,39 @@ object SparkSubmit {
     }
   }
 
+  private def yarnUploadCredentials(args: SparkSubmitArguments): Unit = {
+    val (childArgs, _, sysProps, _) = prepareSubmitEnvironment(args)
+    if (childArgs.size > 0) {
+      printErrorAndExit("Only one argument is expected to upload credential")
+    }
+    for ((key, value) <- sysProps) {
+      System.setProperty(key, value)
+    }
+    val applicationID = ArrayBuffer("--arg", args.submissionToUploadCredential).toArray
+
+    var mainClass: Class[_] = null
+    try {
+      mainClass = Utils.classForName("org.apache.spark.deploy.yarn.Client")
+    } catch {
+      case e: ClassNotFoundException =>
+        e.printStackTrace(printStream)
+        System.exit(CLASS_NOT_FOUND_EXIT_STATUS)
+      case e: NoClassDefFoundError =>
+        e.printStackTrace(printStream)
+        System.exit(CLASS_NOT_FOUND_EXIT_STATUS)
+    }
+    val mainMethod = mainClass.getMethod("uploadCredentialSubmission",
+      new Array[String](0).getClass)
+    if (!Modifier.isStatic(mainMethod.getModifiers)) {
+      throw new IllegalStateException("The main method in the given main class must be static")
+    }
+    try {
+      mainMethod.invoke(null, applicationID)
+    } catch {
+      case t: Throwable =>
+        throw t
+    }
+  }
   /**
    * Request the status of an existing submission using the REST protocol.
    * Standalone and Mesos cluster mode only.
