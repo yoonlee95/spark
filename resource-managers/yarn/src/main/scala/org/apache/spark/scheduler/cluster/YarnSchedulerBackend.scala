@@ -273,6 +273,8 @@ private[spark] abstract class YarnSchedulerBackend(
             logError("Error requesting driver to remove executor" +
               s" $executorId for reason $reason", e)
         }(ThreadUtils.sameThread)
+      case StopSparkContext =>
+        sc.stop
     }
 
 

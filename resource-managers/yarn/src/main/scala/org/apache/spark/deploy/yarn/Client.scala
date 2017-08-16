@@ -55,6 +55,7 @@ import org.apache.hadoop.yarn.util.{ConverterUtils, Records}
 
 import org.apache.spark.{SecurityManager, SparkConf, SparkException}
 import org.apache.spark.deploy.SparkHadoopUtil
+import org.apache.spark.deploy.yarn.ApplicationMasterMessages.KillApplication
 import org.apache.spark.deploy.yarn.config._
 import org.apache.spark.deploy.yarn.security.YARNHadoopDelegationTokenManager
 import org.apache.spark.internal.Logging
