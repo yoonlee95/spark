@@ -468,9 +468,16 @@ private[spark] class ApplicationMaster(
       override val rpcEnv: RpcEnv, driverRef: RpcEndpointRef, securityManager: SecurityManager)
     extends RpcEndpoint with Logging {
 
-//    override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
-//
-//    }
+    override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
+      case ApplicationMasterMessages.KillApplication =>
+        if (securityManager.checkModifyPermissions(context.senderUserName)) {
+          driverRef.send(StopSparkContext)
+          finish(FinalApplicationStatus.KILLED, ApplicationMaster.EXIT_KILLED)
+          context.reply(true)
+        } else {
+          context.reply(false)
+        }
+    }
   }
 
   private def runDriver(securityMgr: SecurityManager): Unit = {
@@ -811,7 +818,7 @@ sealed trait ApplicationMasterMessage extends Serializable
 
 private [spark] object ApplicationMasterMessages {
 
-  case class HelloWorld() extends ApplicationMasterMessage
+  case class KillApplication() extends ApplicationMasterMessage
 }
 
 object ApplicationMaster extends Logging {
@@ -828,6 +835,7 @@ object ApplicationMaster extends Logging {
   private val EXIT_SECURITY = 14
   private val EXIT_EXCEPTION_USER_CLASS = 15
   private val EXIT_EARLY = 16
+  private val EXIT_KILLED = 17
 
   private var master: ApplicationMaster = _
 
