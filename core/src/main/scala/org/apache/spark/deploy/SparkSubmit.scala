@@ -200,6 +200,9 @@ object SparkSubmit extends CommandLineUtils {
             throw e
           }
       }
+    } else {
+      runMethod(applicationID, ArrayBuffer(), sysProps, "org.apache.spark.deploy.yarn.Client",
+        "yarnUploadCredentials", args.verbose)
     }
   }
 

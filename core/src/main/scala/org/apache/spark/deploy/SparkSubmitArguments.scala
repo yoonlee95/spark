@@ -306,15 +306,16 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
     }
   }
 
-  private def validateKillArguments(): Unit = {
+  private def validateUploadCredArguments(): Unit = {
     if (!master.startsWith("yarn")) {
       SparkSubmit.printErrorAndExit(
         "Credential Uploading is only supported in Yarn mode!")
     }
     if (submissionToUploadCred == null) {
-      SparkSubmit.printErrorAndExit("Please specify a submission to kill.")
+      SparkSubmit.printErrorAndExit("Please specify a submission to upload credentials to.")
     }
   }
+
   private def validateStatusRequestArguments(): Unit = {
     if (!master.startsWith("spark://") && !master.startsWith("mesos://")) {
       SparkSubmit.printErrorAndExit(

@@ -27,7 +27,7 @@ import org.apache.hadoop.io.DataOutputBuffer
 import org.apache.hadoop.security.UserGroupInformation
 import org.apache.hadoop.yarn.api.records.{ApplicationAttemptId, ApplicationId}
 
-import org.apache.spark.SparkContext
+import org.apache.spark.{SparkContext, SparkException}
 import org.apache.spark.internal.Logging
 import org.apache.spark.rpc._
 import org.apache.spark.scheduler._
@@ -275,6 +275,7 @@ private[spark] abstract class YarnSchedulerBackend(
         }(ThreadUtils.sameThread)
       case StopSparkContext =>
         sc.stop
+
     }
 
 
@@ -309,6 +310,24 @@ private[spark] abstract class YarnSchedulerBackend(
 
       case RetrieveLastAllocatedExecutorId =>
         context.reply(currentExecutorIdCounter)
+
+      case DelegateCredentials(c) =>
+        context.reply(true)
+        sc.schedulerBackend match {
+          case s: CoarseGrainedSchedulerBackend =>
+            logInfo(s"Update credentials in driver")
+            val f = s.updateCredentials(c)
+//            f.onSuccess {
+//              case b => context.reply(b)
+//            }
+//            f.onFailure {
+//              case NonFatal(e) => context.sendFailure(e)
+//                e
+//            }
+          case _ =>
+            throw new SparkException(s"Update credentials on" +
+              s" ${sc.schedulerBackend.getClass.getSimpleName} is not supported")
+        }
     }
 
     override def onDisconnected(remoteAddress: RpcAddress): Unit = {

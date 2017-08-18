@@ -58,6 +58,8 @@ private[spark] object CoarseGrainedClusterMessages {
 
   case class StopSparkContext() extends CoarseGrainedClusterMessage
 
+  case class DelegateCredentials(credentials: Array[Byte]) extends CoarseGrainedClusterMessage
+
   // Executors to driver
   case class RegisterExecutor(
       executorId: String,

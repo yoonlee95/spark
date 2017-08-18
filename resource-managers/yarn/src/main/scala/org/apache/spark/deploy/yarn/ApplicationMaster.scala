@@ -19,7 +19,7 @@ package org.apache.spark.deploy.yarn
 
 import java.io.{ByteArrayInputStream, DataInputStream, File, IOException}
 import java.lang.reflect.InvocationTargetException
-import java.net.{Socket, URI}
+import java.net.{Socket, URI, URL}
 import java.util.concurrent.{TimeoutException, TimeUnit}
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
@@ -449,7 +449,6 @@ private[spark] class ApplicationMaster(
   private def runClientAMEndpoint(
        port: Int,
        driverRef: RpcEndpointRef,
-       sc: SparkContext,
        securityManager: SecurityManager): RpcEndpointRef = {
     val serversparkConf = new SparkConf()
     serversparkConf.set("spark.rpc.connectionUsingTokens", "true")
@@ -461,14 +460,13 @@ private[spark] class ApplicationMaster(
 
     val clientAMEndpoint =
       amRpcEnv.setupEndpoint(ApplicationMaster.ENDPOINT_NAME,
-        new ClientToAMEndpoint(amRpcEnv, sc, driverRef, securityManager))
+        new ClientToAMEndpoint(amRpcEnv, driverRef, securityManager))
     clientAMEndpoint
   }
 
   /** RpcEndpoint class for ClientToAM */
   private[spark] class ClientToAMEndpoint(
       override val rpcEnv: RpcEnv,
-      sc: SparkContext,
       driverRef: RpcEndpointRef,
       securityManager: SecurityManager)
     extends RpcEndpoint with Logging {
@@ -493,21 +491,33 @@ private[spark] class ApplicationMaster(
           }
           UserGroupInformation.getCurrentUser.addCredentials(credentials)
 
-          sc.schedulerBackend match {
-            case s: CoarseGrainedSchedulerBackend =>
-              logInfo(s"Update credentials in driver")
-              val f = s.updateCredentials(c)
-              f onSuccess {
-                case b => context.reply(b)
-              }
-              f onFailure {
-                case NonFatal(e) => context.sendFailure(e)
-                  e
-              }
-            case _ =>
-              throw new SparkException(s"Update credentials on" +
-                s" ${sc.schedulerBackend.getClass.getSimpleName} is not supported")
+          try {
+            val timeout = RpcUtils.askRpcTimeout(sparkConf)
+            val success = timeout.awaitResult(driverRef.ask[Boolean](DelegateCredentials(c)))
+            if (!success) {
+              throw new SparkException(s"Current user doesn't have modify ACL")
+              context.reply(false)
+            }
+          } catch {
+            case e: TimeoutException =>
+              throw new SparkException(s"Timed out waiting to upload credential")
+              context.reply(false)
           }
+//          sc.schedulerBackend match {
+//            case s: CoarseGrainedSchedulerBackend =>
+//              logInfo(s"Update credentials in driver")
+//              val f = s.updateCredentials(c)
+//              f onSuccess {
+//                case b => context.reply(b)
+//              }
+//              f onFailure {
+//                case NonFatal(e) => context.sendFailure(e)
+//                  e
+//              }
+//            case _ =>
+//              throw new SparkException(s"Update credentials on" +
+//                s" ${sc.schedulerBackend.getClass.getSimpleName} is not supported")
+//          }
         } else {
           context.reply(false)
         }

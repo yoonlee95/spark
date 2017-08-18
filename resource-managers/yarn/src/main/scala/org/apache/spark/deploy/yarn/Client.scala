@@ -55,7 +55,7 @@ import org.apache.hadoop.yarn.util.{ConverterUtils, Records}
 
 import org.apache.spark.{SecurityManager, SparkConf, SparkException}
 import org.apache.spark.deploy.SparkHadoopUtil
-import org.apache.spark.deploy.yarn.ApplicationMasterMessages.KillApplication
+import org.apache.spark.deploy.yarn.ApplicationMasterMessages.{KillApplication, UploadCredentials}
 import org.apache.spark.deploy.yarn.config._
 import org.apache.spark.deploy.yarn.security.YARNHadoopDelegationTokenManager
 import org.apache.spark.internal.Logging
@@ -1197,7 +1197,7 @@ private[spark] class Client(
     yarnClient.start
 
     setupCredentials()
-    credentialManager.obtainCredentials(hadoopConf, credentials)
+    credentialManager.obtainDelegationTokens(hadoopConf, credentials)
 
     val dob = new DataOutputBuffer()
     if (credentials != null) {
@@ -1220,7 +1220,7 @@ private[spark] class Client(
 
     try {
       val timeout = RpcUtils.askRpcTimeout(sparkConf)
-      val success = timeout.awaitResult(AMEndpoint.ask[Boolean](UploadCredentials(dob.getData))
+      val success = timeout.awaitResult(AMEndpoint.ask[Boolean](UploadCredentials(dob.getData)))
       if (!success) {
         throw new SparkException(s"Current user doesn't have modify ACL")
         return
@@ -1328,6 +1328,7 @@ private object Client extends Logging {
     System.setProperty("SPARK_YARN_MODE", "true")
     val sparkConf = new SparkConf
     val args = new ClientArguments(argStrings)
+    logInfo("Came here")
 
     new Client(args, sparkConf).uploadCredentials(new SecurityManager(sparkConf))
   }
