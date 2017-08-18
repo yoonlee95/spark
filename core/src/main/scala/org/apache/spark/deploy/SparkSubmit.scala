@@ -60,7 +60,7 @@ import org.apache.spark.util._
  */
 private[deploy] object SparkSubmitAction extends Enumeration {
   type SparkSubmitAction = Value
-  val SUBMIT, KILL, REQUEST_STATUS = Value
+  val SUBMIT, KILL, REQUEST_STATUS, UPLOAD_CREDENTIALS = Value
 }
 
 /**
@@ -123,6 +123,7 @@ object SparkSubmit extends CommandLineUtils {
       case SparkSubmitAction.SUBMIT => submit(appArgs)
       case SparkSubmitAction.KILL => kill(appArgs)
       case SparkSubmitAction.REQUEST_STATUS => requestStatus(appArgs)
+      case SparkSubmitAction.UPLOAD_CREDENTIALS => uploadCredentials(appArgs)
     }
   }
 
@@ -166,6 +167,39 @@ object SparkSubmit extends CommandLineUtils {
       // Use Rest protocol. Standalone and Mesos cluster mode only..
       new RestSubmissionClient(args.master)
         .killSubmission(args.submissionToKill)
+    }
+  }
+
+  /**
+    *
+    */
+  private def uploadCredentials(args: SparkSubmitArguments): Unit = {
+    val (_, _, sysProps, _) = prepareSubmitEnvironment(args)
+    val applicationID = Seq("--arg", args.submissionToUploadCred)
+    if (args.proxyUser != null) {
+      val proxyUser = UserGroupInformation.createProxyUser(args.proxyUser,
+        UserGroupInformation.getCurrentUser())
+      try {
+        proxyUser.doAs(new PrivilegedExceptionAction[Unit]() {
+          override def run(): Unit = {
+            runMethod(applicationID, ArrayBuffer(), sysProps,
+              "org.apache.spark.deploy.yarn.Client", "yarnUploadCredentials", args.verbose)
+          }
+        })
+      } catch {
+        case e: Exception =>
+          // Hadoop's AuthorizationException suppresses the exception's stack trace, which
+          // makes the message printed to the output by the JVM not very helpful. Instead,
+          // detect exceptions with empty stack traces here, and treat them differently.
+          if (e.getStackTrace().length == 0) {
+            // scalastyle:off println
+            printStream.println(s"ERROR: ${e.getClass().getName()}: ${e.getMessage()}")
+            // scalastyle:on println
+            exitFn(1)
+          } else {
+            throw e
+          }
+      }
     }
   }
 

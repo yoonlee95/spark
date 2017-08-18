@@ -1192,7 +1192,44 @@ private[spark] class Client(
       yarnClient.killApplication(appId)
     }
   }
+  def uploadCredentials(securityManager: SecurityManager): Unit = {
+    yarnClient.init(yarnConf)
+    yarnClient.start
 
+    setupCredentials()
+    credentialManager.obtainCredentials(hadoopConf, credentials)
+
+    val dob = new DataOutputBuffer()
+    if (credentials != null) {
+      UserGroupInformation.getCurrentUser.addCredentials(credentials)
+      credentials.write(dob)
+      logDebug(YarnSparkHadoopUtil.get.dumpTokens(credentials).mkString("\n"))
+    }
+
+    val AMEndpoint = setupAMConnection(ConverterUtils.toApplicationId(args.userArgs(0)),
+      securityManager)
+//    val timeout = RpcUtils.askRpcTimeout(sparkConf)
+//    val success = timeout.awaitResult(
+//      AMEndpoint.ask[Boolean](UploadCredential(dob.getData)))
+//
+//    if (!success) {
+//
+//      throw new SparkException(s"Timed out waiting to kill the application: $appId")
+//      throw new SparkException(s"Current user doesn't have modifiy ACL for the Application : $appId")
+//    }
+
+    try {
+      val timeout = RpcUtils.askRpcTimeout(sparkConf)
+      val success = timeout.awaitResult(AMEndpoint.ask[Boolean](UploadCredentials(dob.getData))
+      if (!success) {
+        throw new SparkException(s"Current user doesn't have modify ACL")
+        return
+      }
+    } catch {
+      case e: TimeoutException =>
+        throw new SparkException(s"Timed out waiting to upload credential")
+    }
+  }
   private def setupAMConnection(
       appId: ApplicationId,
       securityManager: SecurityManager): RpcEndpointRef = {
@@ -1286,6 +1323,13 @@ private object Client extends Logging {
     val args = new ClientArguments(argStrings)
 
     new Client(args, sparkConf).killSparkApplication(new SecurityManager(sparkConf))
+  }
+  def yarnUploadCredentials(argStrings: Array[String]): Unit = {
+    System.setProperty("SPARK_YARN_MODE", "true")
+    val sparkConf = new SparkConf
+    val args = new ClientArguments(argStrings)
+
+    new Client(args, sparkConf).uploadCredentials(new SecurityManager(sparkConf))
   }
 
   // Alias for the user jar

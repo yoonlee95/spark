@@ -442,6 +442,7 @@ class SparkSubmitCommandBuilder extends AbstractCommandBuilder {
           }
           break;
         case KILL_SUBMISSION:
+        case UPLOAD_CRED_SUBMISSION:
         case STATUS:
           isAppResourceReq = false;
           sparkArgs.add(opt);

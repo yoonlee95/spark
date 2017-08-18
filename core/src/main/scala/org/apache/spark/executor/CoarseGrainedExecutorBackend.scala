@@ -17,14 +17,18 @@
 
 package org.apache.spark.executor
 
+import java.io.{ByteArrayInputStream, DataInputStream}
 import java.net.URL
 import java.nio.ByteBuffer
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.{Failure, Success}
 import scala.util.control.NonFatal
+
+import org.apache.hadoop.security.{Credentials, UserGroupInformation}
 
 import org.apache.spark._
 import org.apache.spark.TaskState.TaskState
@@ -124,6 +128,25 @@ private[spark] class CoarseGrainedExecutorBackend(
         }
       }.start()
   }
+
+
+  override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
+      case UploadCredentials(c) =>
+        try {
+          val dataInput = new DataInputStream(new ByteArrayInputStream(c))
+          val credentials = new Credentials
+          credentials.readFields(dataInput)
+          logInfo(s"Update credentials with Tokens " +
+            s"${credentials.getAllTokens.asScala.map(_.getKind.toString).mkString(",")} " +
+            "to executor")
+          UserGroupInformation.getCurrentUser.addCredentials(credentials)
+          context.reply(true)
+        } catch {
+          case NonFatal(e) => logWarning(s"Failed to update credentials", e)
+            context.sendFailure(e)
+        }
+  }
+
 
   override def onDisconnected(remoteAddress: RpcAddress): Unit = {
     if (stopping.get()) {

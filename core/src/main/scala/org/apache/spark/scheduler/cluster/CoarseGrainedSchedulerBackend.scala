@@ -23,6 +23,11 @@ import javax.annotation.concurrent.GuardedBy
 
 import scala.collection.mutable.{ArrayBuffer, HashMap, HashSet}
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
+import scala.util.control.NonFatal
+
+import org.apache.hadoop.io.DataOutputBuffer
+import org.apache.hadoop.security.UserGroupInformation
 
 import org.apache.spark.{ExecutorAllocationClient, SparkEnv, SparkException, TaskState}
 import org.apache.spark.internal.Logging
@@ -169,10 +174,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
           // If the executor's rpc env is not listening for incoming connections, `hostPort`
           // will be null, and the client connection should be used to contact the executor.
           val executorAddress = if (executorRef.address != null) {
-              executorRef.address
-            } else {
-              context.senderAddress
-            }
+            executorRef.address
+          } else {
+            context.senderAddress
+          }
           logInfo(s"Registered executor $executorRef ($executorAddress) with ID $executorId")
           addressToExecutorId(executorAddress) = executorId
           totalCoreCount.addAndGet(cores)
@@ -226,6 +231,19 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
         val reply = SparkAppConfig(sparkProperties,
           SparkEnv.get.securityManager.getIOEncryptionKey())
         context.reply(reply)
+      case UploadCredentials(c) =>
+        logInfo("Came to upload Cred in Scheduler")
+        val futures = executorDataMap.map { case (_, e) =>
+          e.executorEndpoint.ask[Boolean](UploadCredentials(c))
+        }
+
+        implicit val executor = ThreadUtils.sameThread
+        Future.sequence(futures)
+          .map { booleans => booleans.reduce(_ && _) }
+          .andThen {
+            case Success(b) => context.reply(b)
+            case Failure(NonFatal(e)) => context.sendFailure(e)
+          }
     }
 
     // Make fake resource offers on all executors
@@ -674,6 +692,9 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
     // Kill all the executors on this host in an event loop to ensure serialization.
     driverEndpoint.send(KillExecutorsOnHost(host))
     true
+  }
+  def updateCredentials(credential: Array[Byte]): Future[Boolean] = {
+    driverEndpoint.ask[Boolean](UploadCredentials(credential))
   }
 }
 

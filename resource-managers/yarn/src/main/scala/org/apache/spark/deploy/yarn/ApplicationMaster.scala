@@ -17,9 +17,9 @@
 
 package org.apache.spark.deploy.yarn
 
-import java.io.{File, IOException}
+import java.io.{ByteArrayInputStream, DataInputStream, File, IOException}
 import java.lang.reflect.InvocationTargetException
-import java.net.{Socket, URI, URL}
+import java.net.{Socket, URI}
 import java.util.concurrent.{TimeoutException, TimeUnit}
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
@@ -39,6 +39,7 @@ import org.apache.hadoop.yarn.api.records._
 import org.apache.hadoop.yarn.conf.YarnConfiguration
 import org.apache.hadoop.yarn.exceptions.ApplicationAttemptNotFoundException
 import org.apache.hadoop.yarn.util.{ConverterUtils, Records}
+import org.apache.hadoop.security.{Credentials, UserGroupInformation}
 
 import org.apache.spark._
 import org.apache.spark.deploy.SparkHadoopUtil
@@ -448,6 +449,7 @@ private[spark] class ApplicationMaster(
   private def runClientAMEndpoint(
        port: Int,
        driverRef: RpcEndpointRef,
+       sc: SparkContext,
        securityManager: SecurityManager): RpcEndpointRef = {
     val serversparkConf = new SparkConf()
     serversparkConf.set("spark.rpc.connectionUsingTokens", "true")
@@ -459,13 +461,16 @@ private[spark] class ApplicationMaster(
 
     val clientAMEndpoint =
       amRpcEnv.setupEndpoint(ApplicationMaster.ENDPOINT_NAME,
-        new ClientToAMEndpoint(amRpcEnv, driverRef, securityManager))
+        new ClientToAMEndpoint(amRpcEnv, sc, driverRef, securityManager))
     clientAMEndpoint
   }
 
   /** RpcEndpoint class for ClientToAM */
   private[spark] class ClientToAMEndpoint(
-      override val rpcEnv: RpcEnv, driverRef: RpcEndpointRef, securityManager: SecurityManager)
+      override val rpcEnv: RpcEnv,
+      sc: SparkContext,
+      driverRef: RpcEndpointRef,
+      securityManager: SecurityManager)
     extends RpcEndpoint with Logging {
 
     override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
@@ -474,6 +479,35 @@ private[spark] class ApplicationMaster(
           driverRef.send(StopSparkContext)
           finish(FinalApplicationStatus.KILLED, ApplicationMaster.EXIT_KILLED)
           context.reply(true)
+        } else {
+          context.reply(false)
+        }
+      case ApplicationMasterMessages.UploadCredentials(c) =>
+        if (securityManager.checkModifyPermissions(context.senderUserName)) {
+          context.reply(true)
+          val dataInput = new DataInputStream(new ByteArrayInputStream(c))
+          val credentials = new Credentials
+          credentials.readFields(dataInput)
+          if (credentials != null) {
+            logInfo(YarnSparkHadoopUtil.get.dumpTokens(credentials).mkString("\n"))
+          }
+          UserGroupInformation.getCurrentUser.addCredentials(credentials)
+
+          sc.schedulerBackend match {
+            case s: CoarseGrainedSchedulerBackend =>
+              logInfo(s"Update credentials in driver")
+              val f = s.updateCredentials(c)
+              f onSuccess {
+                case b => context.reply(b)
+              }
+              f onFailure {
+                case NonFatal(e) => context.sendFailure(e)
+                  e
+              }
+            case _ =>
+              throw new SparkException(s"Update credentials on" +
+                s" ${sc.schedulerBackend.getClass.getSimpleName} is not supported")
+          }
         } else {
           context.reply(false)
         }
@@ -819,6 +853,8 @@ sealed trait ApplicationMasterMessage extends Serializable
 private [spark] object ApplicationMasterMessages {
 
   case class KillApplication() extends ApplicationMasterMessage
+
+  case class UploadCredentials(credentials: Array[Byte]) extends ApplicationMasterMessage
 }
 
 object ApplicationMaster extends Logging {

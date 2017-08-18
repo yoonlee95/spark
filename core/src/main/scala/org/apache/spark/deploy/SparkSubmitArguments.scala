@@ -78,6 +78,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
   var supervise: Boolean = false
   var driverCores: String = null
   var submissionToKill: String = null
+  var submissionToUploadCred: String = null
   var submissionToRequestStatusFor: String = null
   var useRest: Boolean = true // used internally
 
@@ -245,6 +246,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
     action match {
       case SUBMIT => validateSubmitArguments()
       case KILL => validateKillArguments()
+      case UPLOAD_CREDENTIALS => validateUploadCredArguments()
       case REQUEST_STATUS => validateStatusRequestArguments()
     }
   }
@@ -304,6 +306,15 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
     }
   }
 
+  private def validateKillArguments(): Unit = {
+    if (!master.startsWith("yarn")) {
+      SparkSubmit.printErrorAndExit(
+        "Credential Uploading is only supported in Yarn mode!")
+    }
+    if (submissionToUploadCred == null) {
+      SparkSubmit.printErrorAndExit("Please specify a submission to kill.")
+    }
+  }
   private def validateStatusRequestArguments(): Unit = {
     if (!master.startsWith("spark://") && !master.startsWith("mesos://")) {
       SparkSubmit.printErrorAndExit(
@@ -407,6 +418,12 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
           SparkSubmit.printErrorAndExit(s"Action cannot be both $action and $KILL.")
         }
         action = KILL
+      case UPLOAD_CRED_SUBMISSION =>
+        submissionToUploadCred = value
+        if (action != null) {
+          SparkSubmit.printErrorAndExit(s"Action cannot be both $action and $UPLOAD_CREDENTIALS.")
+        }
+        action = UPLOAD_CREDENTIALS
 
       case STATUS =>
         submissionToRequestStatusFor = value
@@ -580,6 +597,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
         |                              or all available cores on the worker in standalone mode)
         |
         | YARN-only:
+        |  --upload_cred SUBMISSION_ID Upload credential of the given application
         |  --queue QUEUE_NAME          The YARN queue to submit to (Default: "default").
         |  --num-executors NUM         Number of executors to launch (Default: 2).
         |                              If dynamic allocation is enabled, the initial number of
